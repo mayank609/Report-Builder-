@@ -1,0 +1,42 @@
+import {
+  Building2,
+  UserRound,
+  HardHat,
+  Wrench,
+  Ruler,
+  CalendarDays,
+  CalendarRange,
+  Package,
+  Forklift,
+  Users,
+  CircleDollarSign,
+  GanttChartSquare,
+  Image as ImageIcon,
+  Sparkles,
+  ListChecks,
+  PenLine,
+  Paperclip,
+  type LucideIcon,
+} from "lucide-react";
+
+import type { SectionType } from "@/types";
+
+export const SECTION_ICONS: Record<SectionType, LucideIcon> = {
+  project_information: Building2,
+  client_information: UserRound,
+  builder_information: HardHat,
+  contractor_information: Wrench,
+  engineer_information: Ruler,
+  daily_progress: CalendarDays,
+  weekly_progress: CalendarRange,
+  material_usage: Package,
+  equipment: Forklift,
+  labour: Users,
+  budget: CircleDollarSign,
+  timeline: GanttChartSquare,
+  images: ImageIcon,
+  ai_summary: Sparkles,
+  recommendations: ListChecks,
+  signature: PenLine,
+  appendix: Paperclip,
+};

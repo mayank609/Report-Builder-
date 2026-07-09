@@ -1,0 +1,115 @@
+[
+  {
+    "id": "tpl-001",
+    "name": "Daily Progress Report - Residential",
+    "reportType": "daily_progress",
+    "description": "Standard daily site progress report for residential construction projects, covering crew activity, materials, and safety notes.",
+    "status": "published",
+    "layout": {
+      "coverPage": true,
+      "header": true,
+      "footer": true,
+      "logo": true,
+      "watermark": false,
+      "pageNumbers": true,
+      "orientation": "portrait",
+      "font": "Inter",
+      "themeColors": {
+        "primary": "#1d4ed8",
+        "secondary": "#0f172a",
+        "accent": "#f59e0b",
+        "text": "#111827",
+        "background": "#ffffff"
+      }
+    },
+    "sections": [
+      { "id": "sec-001", "type": "project_information", "title": "Project Information", "description": "Key details about the project and site.", "required": true, "editable": true, "visible": true, "collapsed": false, "order": 0 },
+      { "id": "sec-002", "type": "builder_information", "title": "Builder Information", "description": "General contractor and licensing details.", "required": false, "editable": true, "visible": true, "collapsed": false, "order": 1 },
+      { "id": "sec-003", "type": "daily_progress", "title": "Daily Progress Summary", "description": "Work completed today with crew and weather details.", "required": true, "editable": true, "visible": true, "collapsed": false, "order": 2 },
+      { "id": "sec-004", "type": "labour", "title": "Labour on Site", "description": "Headcount and hours logged by trade.", "required": false, "editable": true, "visible": true, "collapsed": false, "order": 3 },
+      { "id": "sec-005", "type": "material_usage", "title": "Material Usage", "description": "Materials delivered and consumed today.", "required": false, "editable": true, "visible": true, "collapsed": false, "order": 4 },
+      { "id": "sec-006", "type": "images", "title": "Site Photos", "description": "Photographic evidence of progress.", "required": false, "editable": true, "visible": true, "collapsed": false, "order": 5 },
+      { "id": "sec-007", "type": "ai_summary", "title": "AI Summary", "description": "AI-generated executive summary of the day's activity.", "required": false, "editable": true, "visible": true, "collapsed": false, "order": 6 },
+      { "id": "sec-008", "type": "signature", "title": "Sign-Off", "description": "Site supervisor and inspector signatures.", "required": true, "editable": false, "visible": true, "collapsed": false, "order": 7 }
+    ],
+    "createdAt": "2026-01-14T09:30:00.000Z",
+    "updatedAt": "2026-05-02T11:12:00.000Z",
+    "createdBy": "System",
+    "aiGenerated": false,
+    "usageCount": 47
+  },
+  {
+    "id": "tpl-002",
+    "name": "Weekly Progress Report - Commercial",
+    "reportType": "weekly_progress",
+    "description": "Comprehensive weekly report for commercial and high-rise builds, including budget tracking and milestone status.",
+    "status": "published",
+    "layout": {
+      "coverPage": true,
+      "header": true,
+      "footer": true,
+      "logo": true,
+      "watermark": false,
+      "pageNumbers": true,
+      "orientation": "portrait",
+      "font": "Inter",
+      "themeColors": {
+        "primary": "#0f766e",
+        "secondary": "#0f172a",
+        "accent": "#f97316",
+        "text": "#111827",
+        "background": "#ffffff"
+      }
+    },
+    "sections": [
+      { "id": "sec-101", "type": "project_information", "title": "Project Overview", "description": "Project scope, location, and status.", "required": true, "editable": true, "visible": true, "collapsed": false, "order": 0 },
+      { "id": "sec-102", "type": "client_information", "title": "Client Information", "description": "Client contact and project ownership details.", "required": false, "editable": true, "visible": true, "collapsed": false, "order": 1 },
+      { "id": "sec-103", "type": "weekly_progress", "title": "Weekly Progress Summary", "description": "Rollup of work completed across the week.", "required": true, "editable": true, "visible": true, "collapsed": false, "order": 2 },
+      { "id": "sec-104", "type": "timeline", "title": "Milestone Timeline", "description": "Planned vs. actual milestone tracking.", "required": true, "editable": true, "visible": true, "collapsed": false, "order": 3 },
+      { "id": "sec-105", "type": "budget", "title": "Budget Status", "description": "Budget allocation and spend by category.", "required": true, "editable": true, "visible": true, "collapsed": false, "order": 4 },
+      { "id": "sec-106", "type": "equipment", "title": "Equipment Utilization", "description": "Equipment on site and utilization rates.", "required": false, "editable": true, "visible": true, "collapsed": false, "order": 5 },
+      { "id": "sec-107", "type": "recommendations", "title": "Recommendations", "description": "Action items and recommendations for next week.", "required": false, "editable": true, "visible": true, "collapsed": false, "order": 6 },
+      { "id": "sec-108", "type": "appendix", "title": "Appendix", "description": "Supporting documents and references.", "required": false, "editable": true, "visible": false, "collapsed": true, "order": 7 }
+    ],
+    "createdAt": "2026-02-01T14:00:00.000Z",
+    "updatedAt": "2026-06-18T08:45:00.000Z",
+    "createdBy": "System",
+    "aiGenerated": false,
+    "usageCount": 32
+  },
+  {
+    "id": "tpl-003",
+    "name": "Site Safety Audit Draft",
+    "reportType": "safety_audit",
+    "description": "Draft template for periodic safety audits and compliance inspections. Still being refined.",
+    "status": "draft",
+    "layout": {
+      "coverPage": true,
+      "header": true,
+      "footer": false,
+      "logo": true,
+      "watermark": true,
+      "pageNumbers": true,
+      "orientation": "portrait",
+      "font": "Inter",
+      "themeColors": {
+        "primary": "#b91c1c",
+        "secondary": "#111827",
+        "accent": "#f59e0b",
+        "text": "#111827",
+        "background": "#ffffff"
+      }
+    },
+    "sections": [
+      { "id": "sec-201", "type": "project_information", "title": "Site Information", "description": "Site identification and audit date.", "required": true, "editable": true, "visible": true, "collapsed": false, "order": 0 },
+      { "id": "sec-202", "type": "engineer_information", "title": "Inspecting Engineer", "description": "Engineer conducting the audit.", "required": true, "editable": true, "visible": true, "collapsed": false, "order": 1 },
+      { "id": "sec-203", "type": "recommendations", "title": "Findings & Recommendations", "description": "Safety findings and corrective actions.", "required": true, "editable": true, "visible": true, "collapsed": false, "order": 2 },
+      { "id": "sec-204", "type": "signature", "title": "Sign-Off", "description": "Auditor and site manager signatures.", "required": true, "editable": false, "visible": true, "collapsed": false, "order": 3 }
+    ],
+    "createdAt": "2026-06-20T10:00:00.000Z",
+    "updatedAt": "2026-06-27T16:20:00.000Z",
+    "createdBy": "System",
+    "aiGenerated": false,
+    "usageCount": 0
+  }
+]

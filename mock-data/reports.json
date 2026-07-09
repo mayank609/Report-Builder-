@@ -1,0 +1,129 @@
+[
+  {
+    "id": "rpt-001",
+    "name": "Pacific Heights Residence - Daily Progress - Jul 6, 2026",
+    "templateId": "tpl-001",
+    "templateName": "Daily Progress Report - Residential",
+    "projectId": "prj-001",
+    "projectName": "Pacific Heights Residence",
+    "builderId": "bld-001",
+    "clientId": "cli-001",
+    "contractorId": "ctr-001",
+    "engineerId": "eng-001",
+    "reportType": "daily_progress",
+    "status": "completed",
+    "context": {
+      "builderId": "bld-001",
+      "projectId": "prj-001",
+      "contractorId": "ctr-001",
+      "clientId": "cli-001",
+      "engineerId": "eng-001",
+      "templateId": "tpl-001",
+      "dateRangeStart": "2026-07-06",
+      "dateRangeEnd": "2026-07-06"
+    },
+    "sections": [
+      {
+        "sectionId": "sec-001",
+        "type": "project_information",
+        "title": "Project Information",
+        "html": "<table class=\"report-table\"><tbody><tr><th>Project Name</th><td>Pacific Heights Residence</td><th>Project Code</th><td>SCG-2026-014</td></tr><tr><th>Address</th><td>1180 Pacific Heights Blvd, San Francisco, CA</td><th>Status</th><td>In Progress</td></tr><tr><th>Start Date</th><td>Feb 10, 2026</td><th>Est. Completion</th><td>Nov 30, 2026</td></tr></tbody></table>",
+        "order": 0
+      },
+      {
+        "sectionId": "sec-003",
+        "type": "daily_progress",
+        "title": "Daily Progress Summary",
+        "html": "<p><strong>Weather:</strong> Clear, 68°F</p><p>Continued structural steel installation on level 3, poured slab section C, and began MEP rough-in in the east wing. Crew of 34 logged 272 total hours with no safety incidents reported.</p>",
+        "order": 1
+      },
+      {
+        "sectionId": "sec-007",
+        "type": "ai_summary",
+        "title": "AI Summary",
+        "html": "<p>The project remains on schedule with steady progress on level 3 structural work. MEP rough-in initiation marks a positive shift toward parallel trade execution, which should help compress the level 4 timeline.</p>",
+        "order": 2
+      }
+    ],
+    "layout": {
+      "coverPage": true,
+      "header": true,
+      "footer": true,
+      "logo": true,
+      "watermark": false,
+      "pageNumbers": true,
+      "orientation": "portrait",
+      "font": "Inter",
+      "themeColors": {
+        "primary": "#1d4ed8",
+        "secondary": "#0f172a",
+        "accent": "#f59e0b",
+        "text": "#111827",
+        "background": "#ffffff"
+      }
+    },
+    "aiSummary": "The project remains on schedule with steady progress on level 3 structural work.",
+    "createdAt": "2026-07-06T19:05:00.000Z",
+    "updatedAt": "2026-07-06T19:05:00.000Z"
+  },
+  {
+    "id": "rpt-002",
+    "name": "Horizon Tower Redevelopment - Weekly Progress - Jul 4, 2026",
+    "templateId": "tpl-002",
+    "templateName": "Weekly Progress Report - Commercial",
+    "projectId": "prj-002",
+    "projectName": "Horizon Tower Redevelopment",
+    "builderId": "bld-002",
+    "clientId": "cli-002",
+    "contractorId": "ctr-002",
+    "engineerId": "eng-002",
+    "reportType": "weekly_progress",
+    "status": "completed",
+    "context": {
+      "builderId": "bld-002",
+      "projectId": "prj-002",
+      "contractorId": "ctr-002",
+      "clientId": "cli-002",
+      "engineerId": "eng-002",
+      "templateId": "tpl-002",
+      "dateRangeStart": "2026-06-29",
+      "dateRangeEnd": "2026-07-04"
+    },
+    "sections": [
+      {
+        "sectionId": "sec-101",
+        "type": "project_information",
+        "title": "Project Overview",
+        "html": "<table class=\"report-table\"><tbody><tr><th>Project Name</th><td>Horizon Tower Redevelopment</td><th>Project Code</th><td>NSB-2025-092</td></tr><tr><th>Type</th><td>Commercial - High-Rise Mixed Use</td><th>Percent Complete</th><td>34%</td></tr></tbody></table>",
+        "order": 0
+      },
+      {
+        "sectionId": "sec-105",
+        "type": "budget",
+        "title": "Budget Status",
+        "html": "<p>Total budget of $38.5M with $14.2M spent to date (37%). Foundation and substructure spend is 96% complete against allocation; curtain wall and MEP categories remain within planned envelope.</p>",
+        "order": 1
+      }
+    ],
+    "layout": {
+      "coverPage": true,
+      "header": true,
+      "footer": true,
+      "logo": true,
+      "watermark": false,
+      "pageNumbers": true,
+      "orientation": "portrait",
+      "font": "Inter",
+      "themeColors": {
+        "primary": "#0f766e",
+        "secondary": "#0f172a",
+        "accent": "#f97316",
+        "text": "#111827",
+        "background": "#ffffff"
+      }
+    },
+    "aiSummary": "Steady progress on structural steel erection; foundation spend tracking slightly over budget.",
+    "createdAt": "2026-07-04T20:15:00.000Z",
+    "updatedAt": "2026-07-04T20:15:00.000Z"
+  }
+]

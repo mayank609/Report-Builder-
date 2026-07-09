@@ -1,0 +1,57 @@
+[
+  {
+    "id": "ctr-001",
+    "name": "David Reyes",
+    "companyName": "Reyes Concrete & Masonry",
+    "trade": "Concrete & Masonry",
+    "email": "david@reyesconcrete.com",
+    "phone": "+1 (415) 555-0221",
+    "licenseNumber": "SC-33871",
+    "rating": 4.8,
+    "activeProjects": 3
+  },
+  {
+    "id": "ctr-002",
+    "name": "Angela Whitfield",
+    "companyName": "Whitfield Electrical Services",
+    "trade": "Electrical",
+    "email": "angela@whitfieldelectrical.com",
+    "phone": "+1 (415) 555-0287",
+    "licenseNumber": "SC-29104",
+    "rating": 4.9,
+    "activeProjects": 5
+  },
+  {
+    "id": "ctr-003",
+    "name": "Tom Baxter",
+    "companyName": "Baxter Plumbing & Mechanical",
+    "trade": "Plumbing & HVAC",
+    "email": "tom@baxterplumbing.com",
+    "phone": "+1 (212) 555-0334",
+    "licenseNumber": "SC-41562",
+    "rating": 4.6,
+    "activeProjects": 4
+  },
+  {
+    "id": "ctr-004",
+    "name": "Grace Lin",
+    "companyName": "Lin Structural Steel",
+    "trade": "Structural Steel",
+    "email": "grace@linsteel.com",
+    "phone": "+1 (512) 555-0412",
+    "licenseNumber": "SC-18873",
+    "rating": 4.7,
+    "activeProjects": 2
+  },
+  {
+    "id": "ctr-005",
+    "name": "Ray Thompson",
+    "companyName": "Thompson Roofing Co.",
+    "trade": "Roofing",
+    "email": "ray@thompsonroofing.com",
+    "phone": "+1 (512) 555-0459",
+    "licenseNumber": "SC-25690",
+    "rating": 4.5,
+    "activeProjects": 3
+  }
+]

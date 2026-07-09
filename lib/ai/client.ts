@@ -1,0 +1,50 @@
+"use client";
+
+import { settingsService } from "@/services";
+import type { AiReportSuggestion, AiTemplateSuggestion, Project, ReportTemplate } from "@/types";
+
+async function withApiKeyHeaders(): Promise<HeadersInit> {
+  const settings = await settingsService.get();
+  const headers: HeadersInit = { "Content-Type": "application/json" };
+  if (settings.geminiApiKey) {
+    headers["x-gemini-api-key"] = settings.geminiApiKey;
+  }
+  return headers;
+}
+
+export async function generateTemplateFromPrompt(prompt: string): Promise<AiTemplateSuggestion> {
+  const headers = await withApiKeyHeaders();
+  const res = await fetch("/api/ai/generate-template", {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ prompt }),
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error || "Failed to generate template");
+  }
+  return res.json();
+}
+
+export async function generateReportFromContext(params: {
+  template: ReportTemplate;
+  project: Project;
+  builderName: string;
+  clientName: string | null;
+  contractorName: string | null;
+  engineerName: string | null;
+  dateRangeStart: string;
+  dateRangeEnd: string;
+}): Promise<AiReportSuggestion> {
+  const headers = await withApiKeyHeaders();
+  const res = await fetch("/api/ai/generate-report", {
+    method: "POST",
+    headers,
+    body: JSON.stringify(params),
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error || "Failed to generate report");
+  }
+  return res.json();
+}

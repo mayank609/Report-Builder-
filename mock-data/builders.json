@@ -1,0 +1,44 @@
+[
+  {
+    "id": "bld-001",
+    "name": "Michael Sinclair",
+    "companyName": "Sinclair Construction Group",
+    "licenseNumber": "GC-84921-CA",
+    "email": "michael.sinclair@sinclairbuild.com",
+    "phone": "+1 (415) 555-0148",
+    "address": "480 Harrison Street, Suite 300",
+    "city": "San Francisco",
+    "state": "CA",
+    "logoUrl": "/logos/sinclair.svg",
+    "establishedYear": 1998,
+    "specialization": ["Residential", "Mixed-Use", "High-Rise"]
+  },
+  {
+    "id": "bld-002",
+    "name": "Priya Nair",
+    "companyName": "Novastone Builders LLC",
+    "licenseNumber": "GC-77310-NY",
+    "email": "priya.nair@novastonebuilders.com",
+    "phone": "+1 (212) 555-0192",
+    "address": "225 West 34th Street, 12th Floor",
+    "city": "New York",
+    "state": "NY",
+    "logoUrl": "/logos/novastone.svg",
+    "establishedYear": 2005,
+    "specialization": ["Commercial", "Institutional", "Renovation"]
+  },
+  {
+    "id": "bld-003",
+    "name": "Carlos Mendoza",
+    "companyName": "Meridian Structures Inc.",
+    "licenseNumber": "GC-56210-TX",
+    "email": "carlos.mendoza@meridianstructures.com",
+    "phone": "+1 (512) 555-0173",
+    "address": "3100 Commerce Drive",
+    "city": "Austin",
+    "state": "TX",
+    "logoUrl": "/logos/meridian.svg",
+    "establishedYear": 2011,
+    "specialization": ["Residential", "Industrial"]
+  }
+]

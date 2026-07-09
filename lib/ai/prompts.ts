@@ -1,0 +1,109 @@
+import { SECTION_CATALOG } from "@/lib/constants";
+import type { Project, ReportTemplate } from "@/types";
+
+const SECTION_TYPE_LIST = SECTION_CATALOG.map((s) => s.type).join(", ");
+const REPORT_TYPE_LIST =
+  "daily_progress, weekly_progress, monthly_progress, inspection, safety_audit, quality_audit, material_delivery, final_completion, custom";
+
+export function buildTemplateGenerationPrompt(userPrompt: string): string {
+  return `You are an expert construction reporting consultant helping design a report template for a construction SaaS platform.
+
+User request: "${userPrompt}"
+
+Design a professional report template that satisfies this request. Respond with STRICT JSON only (no markdown fences, no commentary) matching exactly this shape:
+
+{
+  "name": string,
+  "reportType": one of [${REPORT_TYPE_LIST}],
+  "description": string (1-2 sentences),
+  "sections": [
+    { "type": one of [${SECTION_TYPE_LIST}], "title": string, "description": string }
+  ],
+  "recommendedTables": string[] (names of tables/data grids that should appear, e.g. "Material Usage Table"),
+  "formattingNotes": string (guidance on layout, fonts, tone),
+  "summaryPrompts": string[] (2-4 prompt fragments that could be used to ask an AI to summarize this report's data)
+}
+
+Choose 5 to 10 relevant sections in a sensible order. Only use section types from the provided list. Ensure the JSON is valid and parses with JSON.parse.`;
+}
+
+export function buildReportGenerationPrompt(params: {
+  template: ReportTemplate;
+  project: Project;
+  builderName: string;
+  clientName: string | null;
+  contractorName: string | null;
+  engineerName: string | null;
+  dateRangeStart: string;
+  dateRangeEnd: string;
+}): string {
+  const {
+    template,
+    project,
+    builderName,
+    clientName,
+    contractorName,
+    engineerName,
+    dateRangeStart,
+    dateRangeEnd,
+  } = params;
+
+  const visibleSections = template.sections
+    .filter((s) => s.visible)
+    .sort((a, b) => a.order - b.order);
+
+  return `You are an expert construction report writer generating a formal, professional construction progress report.
+
+Template: "${template.name}" (${template.reportType})
+Report period: ${dateRangeStart} to ${dateRangeEnd}
+
+Project data (JSON):
+${JSON.stringify(
+  {
+    project: {
+      name: project.name,
+      projectCode: project.projectCode,
+      type: project.type,
+      status: project.status,
+      address: `${project.address}, ${project.city}, ${project.state}`,
+      startDate: project.startDate,
+      estimatedEndDate: project.estimatedEndDate,
+      percentComplete: project.percentComplete,
+      totalBudget: project.totalBudget,
+      spentBudget: project.spentBudget,
+      description: project.description,
+    },
+    builder: builderName,
+    client: clientName,
+    contractor: contractorName,
+    engineer: engineerName,
+    materialUsage: project.materialUsage,
+    equipment: project.equipment,
+    labour: project.labour,
+    budgetBreakdown: project.budgetBreakdown,
+    milestones: project.milestones,
+    dailyLogs: project.dailyLogs.filter(
+      (log) => log.date >= dateRangeStart && log.date <= dateRangeEnd
+    ),
+  },
+  null,
+  2
+)}
+
+Sections to generate, in order: ${visibleSections
+    .map((s) => `${s.type} ("${s.title}")`)
+    .join(", ")}
+
+Respond with STRICT JSON only (no markdown fences, no commentary) matching exactly this shape:
+
+{
+  "sections": [
+    { "sectionId": string (must equal one of: ${visibleSections
+      .map((s) => `"${s.id}"`)
+      .join(", ")}), "html": string }
+  ],
+  "aiSummary": string (a 2-4 sentence executive summary of overall project health and this period's progress)
+}
+
+For each section's "html" field, write clean, semantic HTML fragment content (use <p>, <table class="report-table">, <ul>, <strong> as appropriate) suitable for direct embedding in a printed PDF report. Use tables for structured data like materials, budget, labour, equipment, and milestones. Be specific and reference the real data provided above — do not invent facts. Keep each section concise but informative (60-180 words of prose plus any tables).`;
+}

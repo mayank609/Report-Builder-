@@ -1,0 +1,42 @@
+[
+  {
+    "id": "eng-001",
+    "name": "Dr. Susan Park",
+    "designation": "Principal Structural Engineer",
+    "discipline": "Structural",
+    "email": "susan.park@parkengineering.com",
+    "phone": "+1 (415) 555-0911",
+    "licenseNumber": "PE-104822",
+    "yearsExperience": 19
+  },
+  {
+    "id": "eng-002",
+    "name": "Marcus Bell",
+    "designation": "Senior Civil Engineer",
+    "discipline": "Civil",
+    "email": "marcus.bell@bellcivil.com",
+    "phone": "+1 (212) 555-0922",
+    "licenseNumber": "PE-98213",
+    "yearsExperience": 14
+  },
+  {
+    "id": "eng-003",
+    "name": "Elena Vasquez",
+    "designation": "MEP Engineer",
+    "discipline": "Mechanical, Electrical & Plumbing",
+    "email": "elena.vasquez@vasquezmep.com",
+    "phone": "+1 (512) 555-0933",
+    "licenseNumber": "PE-77465",
+    "yearsExperience": 11
+  },
+  {
+    "id": "eng-004",
+    "name": "Wei Zhang",
+    "designation": "Geotechnical Engineer",
+    "discipline": "Geotechnical",
+    "email": "wei.zhang@zhanggeotech.com",
+    "phone": "+1 (415) 555-0944",
+    "licenseNumber": "PE-65221",
+    "yearsExperience": 22
+  }
+]

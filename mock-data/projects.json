@@ -1,0 +1,251 @@
+[
+  {
+    "id": "prj-001",
+    "name": "Pacific Heights Residence",
+    "projectCode": "SCG-2026-014",
+    "builderId": "bld-001",
+    "clientId": "cli-001",
+    "contractorIds": ["ctr-001", "ctr-002", "ctr-003"],
+    "engineerIds": ["eng-001", "eng-003"],
+    "type": "Residential - Custom Home",
+    "status": "in_progress",
+    "address": "1180 Pacific Heights Blvd",
+    "city": "San Francisco",
+    "state": "CA",
+    "startDate": "2026-02-10",
+    "estimatedEndDate": "2026-11-30",
+    "actualEndDate": null,
+    "totalBudget": 4200000,
+    "spentBudget": 1890000,
+    "percentComplete": 42,
+    "description": "Ground-up construction of a 6,400 sq ft custom single-family residence with 4 levels, rooftop terrace, and integrated smart-home systems.",
+    "siteAreaSqft": 6400,
+    "floors": 4,
+    "units": 1,
+    "materialUsage": [
+      { "material": "Ready-Mix Concrete", "unit": "cu yd", "planned": 620, "used": 410, "remaining": 210 },
+      { "material": "Rebar (#4 Grade 60)", "unit": "tons", "planned": 48, "used": 29, "remaining": 19 },
+      { "material": "Structural Steel Beams", "unit": "tons", "planned": 32, "used": 18, "remaining": 14 },
+      { "material": "Framing Lumber", "unit": "board ft", "planned": 85000, "used": 51000, "remaining": 34000 },
+      { "material": "Insulation (Spray Foam)", "unit": "sq ft", "planned": 12000, "used": 4200, "remaining": 7800 }
+    ],
+    "equipment": [
+      { "name": "Tower Crane TC-6015", "type": "Crane", "quantity": 1, "hoursUsed": 640, "status": "operational" },
+      { "name": "Concrete Pump Truck", "type": "Pump", "quantity": 1, "hoursUsed": 120, "status": "operational" },
+      { "name": "Excavator CAT 320", "type": "Excavator", "quantity": 2, "hoursUsed": 310, "status": "idle" },
+      { "name": "Scissor Lift 26ft", "type": "Access Equipment", "quantity": 3, "hoursUsed": 480, "status": "operational" }
+    ],
+    "labour": [
+      { "role": "Carpenters", "headcount": 14, "hoursLogged": 2240, "shift": "Day" },
+      { "role": "Electricians", "headcount": 6, "hoursLogged": 960, "shift": "Day" },
+      { "role": "Plumbers", "headcount": 5, "hoursLogged": 800, "shift": "Day" },
+      { "role": "General Laborers", "headcount": 18, "hoursLogged": 2880, "shift": "Day" },
+      { "role": "Site Supervisors", "headcount": 3, "hoursLogged": 480, "shift": "Day" }
+    ],
+    "budgetBreakdown": [
+      { "category": "Site Work & Foundation", "allocated": 620000, "spent": 598000 },
+      { "category": "Structural Framing", "allocated": 980000, "spent": 640000 },
+      { "category": "MEP Systems", "allocated": 740000, "spent": 310000 },
+      { "category": "Interior Finishes", "allocated": 860000, "spent": 120000 },
+      { "category": "Exterior & Landscaping", "allocated": 500000, "spent": 95000 },
+      { "category": "Permits & Contingency", "allocated": 500000, "spent": 127000 }
+    ],
+    "milestones": [
+      { "name": "Site Mobilization", "plannedDate": "2026-02-10", "actualDate": "2026-02-10", "status": "completed" },
+      { "name": "Foundation Complete", "plannedDate": "2026-03-25", "actualDate": "2026-03-28", "status": "completed" },
+      { "name": "Structural Framing Complete", "plannedDate": "2026-06-15", "actualDate": null, "status": "in_progress" },
+      { "name": "MEP Rough-In Complete", "plannedDate": "2026-08-01", "actualDate": null, "status": "upcoming" },
+      { "name": "Interior Finishes Complete", "plannedDate": "2026-10-15", "actualDate": null, "status": "upcoming" },
+      { "name": "Final Walkthrough", "plannedDate": "2026-11-25", "actualDate": null, "status": "upcoming" }
+    ],
+    "dailyLogs": [
+      { "date": "2026-07-06", "weather": "Clear, 68°F", "workCompleted": "Continued structural steel installation on level 3, poured slab section C, MEP rough-in started in east wing.", "crewOnSite": 34, "hoursWorked": 272, "incidents": "None reported." },
+      { "date": "2026-07-07", "weather": "Partly cloudy, 65°F", "workCompleted": "Completed level 3 steel connections, framing crew began level 4 wall layout, electrical rough-in continued.", "crewOnSite": 31, "hoursWorked": 248, "incidents": "Minor delay due to material delivery, resolved same day." },
+      { "date": "2026-07-08", "weather": "Clear, 70°F", "workCompleted": "Framing inspection passed for level 3, plumbing rough-in started, crane relocated for level 4 lifts.", "crewOnSite": 29, "hoursWorked": 232, "incidents": "None reported." },
+      { "date": "2026-07-09", "weather": "Overcast, 63°F", "workCompleted": "Level 4 wall framing 60% complete, HVAC ductwork delivery received and staged, safety toolbox talk conducted.", "crewOnSite": 33, "hoursWorked": 264, "incidents": "None reported." }
+    ],
+    "images": [
+      { "url": "/mock-images/site-progress-1.jpg", "caption": "Level 3 structural steel installation", "capturedAt": "2026-07-06" },
+      { "url": "/mock-images/site-progress-2.jpg", "caption": "East wing MEP rough-in", "capturedAt": "2026-07-07" },
+      { "url": "/mock-images/site-progress-3.jpg", "caption": "Level 4 framing layout", "capturedAt": "2026-07-09" }
+    ]
+  },
+  {
+    "id": "prj-002",
+    "name": "Horizon Tower Redevelopment",
+    "projectCode": "NSB-2025-092",
+    "builderId": "bld-002",
+    "clientId": "cli-002",
+    "contractorIds": ["ctr-002", "ctr-004", "ctr-005"],
+    "engineerIds": ["eng-002", "eng-003"],
+    "type": "Commercial - High-Rise Mixed Use",
+    "status": "in_progress",
+    "address": "500 Fifth Avenue Annex",
+    "city": "New York",
+    "state": "NY",
+    "startDate": "2025-09-01",
+    "estimatedEndDate": "2027-03-15",
+    "actualEndDate": null,
+    "totalBudget": 38500000,
+    "spentBudget": 14200000,
+    "percentComplete": 34,
+    "description": "Redevelopment of a 28-story mixed-use tower including retail podium, office floors, and rooftop amenity deck.",
+    "siteAreaSqft": 42000,
+    "floors": 28,
+    "units": 1,
+    "materialUsage": [
+      { "material": "Ready-Mix Concrete", "unit": "cu yd", "planned": 9200, "used": 3600, "remaining": 5600 },
+      { "material": "Structural Steel", "unit": "tons", "planned": 2100, "used": 780, "remaining": 1320 },
+      { "material": "Curtain Wall Glazing", "unit": "sq ft", "planned": 68000, "used": 9000, "remaining": 59000 },
+      { "material": "Rebar (#5 Grade 60)", "unit": "tons", "planned": 640, "used": 260, "remaining": 380 }
+    ],
+    "equipment": [
+      { "name": "Tower Crane TC-9000", "type": "Crane", "quantity": 2, "hoursUsed": 1840, "status": "operational" },
+      { "name": "Concrete Pump - Boom 52m", "type": "Pump", "quantity": 2, "hoursUsed": 620, "status": "operational" },
+      { "name": "Man/Material Hoist", "type": "Hoist", "quantity": 2, "hoursUsed": 2100, "status": "operational" }
+    ],
+    "labour": [
+      { "role": "Ironworkers", "headcount": 42, "hoursLogged": 6720, "shift": "Day" },
+      { "role": "Concrete Crew", "headcount": 38, "hoursLogged": 6080, "shift": "Day/Night" },
+      { "role": "Electricians", "headcount": 22, "hoursLogged": 3520, "shift": "Day" },
+      { "role": "General Laborers", "headcount": 55, "hoursLogged": 8800, "shift": "Day" }
+    ],
+    "budgetBreakdown": [
+      { "category": "Foundation & Substructure", "allocated": 6200000, "spent": 5980000 },
+      { "category": "Structural Steel & Concrete", "allocated": 12800000, "spent": 6100000 },
+      { "category": "Curtain Wall & Envelope", "allocated": 8900000, "spent": 900000 },
+      { "category": "MEP & Vertical Transport", "allocated": 7200000, "spent": 780000 },
+      { "category": "Interior Build-Out", "allocated": 2400000, "spent": 140000 },
+      { "category": "Permits & Contingency", "allocated": 1000000, "spent": 300000 }
+    ],
+    "milestones": [
+      { "name": "Excavation & Shoring Complete", "plannedDate": "2025-11-10", "actualDate": "2025-11-15", "status": "completed" },
+      { "name": "Foundation Complete", "plannedDate": "2026-01-20", "actualDate": "2026-01-30", "status": "completed" },
+      { "name": "Topping Out (Floor 28)", "plannedDate": "2026-12-01", "actualDate": null, "status": "upcoming" },
+      { "name": "Curtain Wall Enclosure", "plannedDate": "2027-01-15", "actualDate": null, "status": "upcoming" },
+      { "name": "Substantial Completion", "plannedDate": "2027-03-01", "actualDate": null, "status": "upcoming" }
+    ],
+    "dailyLogs": [
+      { "date": "2026-07-07", "weather": "Humid, 82°F", "workCompleted": "Floor 9 concrete pour completed, steel erection progressing on floor 11, curtain wall mockup approved by architect.", "crewOnSite": 96, "hoursWorked": 768, "incidents": "None reported." },
+      { "date": "2026-07-08", "weather": "Thunderstorms, 76°F", "workCompleted": "Crane operations halted 2 hours due to weather, interior MEP rough-in continued on floors 4-6.", "crewOnSite": 71, "hoursWorked": 568, "incidents": "Weather delay, no safety incidents." },
+      { "date": "2026-07-09", "weather": "Clear, 79°F", "workCompleted": "Resumed steel erection floor 11, floor 10 formwork installation, elevator shaft waterproofing inspection passed.", "crewOnSite": 98, "hoursWorked": 784, "incidents": "None reported." }
+    ],
+    "images": [
+      { "url": "/mock-images/tower-progress-1.jpg", "caption": "Floor 9 concrete pour", "capturedAt": "2026-07-07" },
+      { "url": "/mock-images/tower-progress-2.jpg", "caption": "Curtain wall mockup", "capturedAt": "2026-07-08" }
+    ]
+  },
+  {
+    "id": "prj-003",
+    "name": "South Austin Municipal Complex",
+    "projectCode": "MSI-2025-058",
+    "builderId": "bld-003",
+    "clientId": "cli-003",
+    "contractorIds": ["ctr-001", "ctr-004", "ctr-005"],
+    "engineerIds": ["eng-004", "eng-002"],
+    "type": "Institutional - Government Facility",
+    "status": "on_hold",
+    "address": "3100 Commerce Drive",
+    "city": "Austin",
+    "state": "TX",
+    "startDate": "2025-05-15",
+    "estimatedEndDate": "2026-12-20",
+    "actualEndDate": null,
+    "totalBudget": 12800000,
+    "spentBudget": 5100000,
+    "percentComplete": 38,
+    "description": "New 3-story municipal services complex including public works offices, permitting center, and community hall.",
+    "siteAreaSqft": 58000,
+    "floors": 3,
+    "units": 1,
+    "materialUsage": [
+      { "material": "Ready-Mix Concrete", "unit": "cu yd", "planned": 3100, "used": 1450, "remaining": 1650 },
+      { "material": "CMU Block", "unit": "units", "planned": 42000, "used": 18000, "remaining": 24000 },
+      { "material": "Structural Steel", "unit": "tons", "planned": 480, "used": 210, "remaining": 270 }
+    ],
+    "equipment": [
+      { "name": "Mobile Crane 80T", "type": "Crane", "quantity": 1, "hoursUsed": 340, "status": "idle" },
+      { "name": "Backhoe Loader", "type": "Earthmoving", "quantity": 2, "hoursUsed": 410, "status": "under_maintenance" }
+    ],
+    "labour": [
+      { "role": "Masons", "headcount": 16, "hoursLogged": 2560, "shift": "Day" },
+      { "role": "Ironworkers", "headcount": 10, "hoursLogged": 1600, "shift": "Day" },
+      { "role": "General Laborers", "headcount": 24, "hoursLogged": 3840, "shift": "Day" }
+    ],
+    "budgetBreakdown": [
+      { "category": "Site Work & Foundation", "allocated": 2100000, "spent": 2050000 },
+      { "category": "Structural & Envelope", "allocated": 4800000, "spent": 2400000 },
+      { "category": "MEP Systems", "allocated": 3200000, "spent": 480000 },
+      { "category": "Interior Finishes", "allocated": 1900000, "spent": 90000 },
+      { "category": "Permits & Contingency", "allocated": 800000, "spent": 80000 }
+    ],
+    "milestones": [
+      { "name": "Site Grading Complete", "plannedDate": "2025-06-30", "actualDate": "2025-07-05", "status": "completed" },
+      { "name": "Foundation Complete", "plannedDate": "2025-09-15", "actualDate": "2025-09-20", "status": "completed" },
+      { "name": "Structural Steel Complete", "plannedDate": "2026-08-01", "actualDate": null, "status": "delayed" },
+      { "name": "Building Enclosure", "plannedDate": "2026-10-01", "actualDate": null, "status": "upcoming" }
+    ],
+    "dailyLogs": [
+      { "date": "2026-06-20", "weather": "Clear, 94°F", "workCompleted": "CMU wall installation continued on north block, structural steel delivery inspected and staged.", "crewOnSite": 28, "hoursWorked": 224, "incidents": "Heat advisory - extra water breaks enforced." },
+      { "date": "2026-06-21", "weather": "Clear, 96°F", "workCompleted": "Work paused pending budget review from city council; site secured.", "crewOnSite": 4, "hoursWorked": 32, "incidents": "None reported." }
+    ],
+    "images": [
+      { "url": "/mock-images/municipal-progress-1.jpg", "caption": "CMU wall installation north block", "capturedAt": "2026-06-20" }
+    ]
+  },
+  {
+    "id": "prj-004",
+    "name": "Okafor Logistics Warehouse",
+    "projectCode": "SCG-2026-021",
+    "builderId": "bld-001",
+    "clientId": "cli-004",
+    "contractorIds": ["ctr-001", "ctr-004"],
+    "engineerIds": ["eng-002"],
+    "type": "Industrial - Warehouse & Distribution",
+    "status": "completed",
+    "address": "88 Embarcadero Center Logistics Park",
+    "city": "Oakland",
+    "state": "CA",
+    "startDate": "2025-01-10",
+    "estimatedEndDate": "2025-10-30",
+    "actualEndDate": "2025-10-22",
+    "totalBudget": 6800000,
+    "spentBudget": 6640000,
+    "percentComplete": 100,
+    "description": "220,000 sq ft distribution warehouse with 32 dock doors, high-bay racking, and automated sortation infrastructure.",
+    "siteAreaSqft": 220000,
+    "floors": 1,
+    "units": 1,
+    "materialUsage": [
+      { "material": "Ready-Mix Concrete", "unit": "cu yd", "planned": 4200, "used": 4180, "remaining": 20 },
+      { "material": "Structural Steel", "unit": "tons", "planned": 1150, "used": 1140, "remaining": 10 },
+      { "material": "Metal Roof Decking", "unit": "sq ft", "planned": 220000, "used": 220000, "remaining": 0 }
+    ],
+    "equipment": [
+      { "name": "Mobile Crane 120T", "type": "Crane", "quantity": 1, "hoursUsed": 980, "status": "idle" },
+      { "name": "Telehandler", "type": "Material Handling", "quantity": 4, "hoursUsed": 1620, "status": "idle" }
+    ],
+    "labour": [
+      { "role": "Ironworkers", "headcount": 20, "hoursLogged": 12800, "shift": "Day" },
+      { "role": "General Laborers", "headcount": 30, "hoursLogged": 19200, "shift": "Day" }
+    ],
+    "budgetBreakdown": [
+      { "category": "Site Work & Foundation", "allocated": 1400000, "spent": 1390000 },
+      { "category": "Structural & Envelope", "allocated": 3200000, "spent": 3150000 },
+      { "category": "MEP & Fire Protection", "allocated": 1400000, "spent": 1380000 },
+      { "category": "Permits & Contingency", "allocated": 800000, "spent": 720000 }
+    ],
+    "milestones": [
+      { "name": "Foundation Complete", "plannedDate": "2025-03-15", "actualDate": "2025-03-14", "status": "completed" },
+      { "name": "Structural Steel Complete", "plannedDate": "2025-06-01", "actualDate": "2025-05-28", "status": "completed" },
+      { "name": "Building Enclosure", "plannedDate": "2025-08-15", "actualDate": "2025-08-10", "status": "completed" },
+      { "name": "Final Completion", "plannedDate": "2025-10-30", "actualDate": "2025-10-22", "status": "completed" }
+    ],
+    "dailyLogs": [
+      { "date": "2025-10-20", "weather": "Clear, 71°F", "workCompleted": "Final punch list items closed out, racking system commissioning complete.", "crewOnSite": 12, "hoursWorked": 96, "incidents": "None reported." }
+    ],
+    "images": [
+      { "url": "/mock-images/warehouse-final-1.jpg", "caption": "Completed warehouse exterior", "capturedAt": "2025-10-22" }
+    ]
+  }
+]

@@ -1,0 +1,38 @@
+[
+  {
+    "id": "cli-001",
+    "name": "Jonathan Pierce",
+    "companyName": "Pierce Family Trust",
+    "email": "jonathan.pierce@piercefamily.com",
+    "phone": "+1 (415) 555-0512",
+    "address": "1180 Pacific Heights Blvd",
+    "clientType": "individual"
+  },
+  {
+    "id": "cli-002",
+    "name": "Rachel Kim",
+    "companyName": "Horizon Real Estate Partners",
+    "email": "rachel.kim@horizonrep.com",
+    "phone": "+1 (212) 555-0678",
+    "address": "500 Fifth Avenue, Suite 2200",
+    "clientType": "corporate"
+  },
+  {
+    "id": "cli-003",
+    "name": "Dept. of Public Works",
+    "companyName": "City of Austin",
+    "email": "publicworks@austintexas.gov",
+    "phone": "+1 (512) 555-0789",
+    "address": "301 W 2nd Street",
+    "clientType": "government"
+  },
+  {
+    "id": "cli-004",
+    "name": "Samuel Okafor",
+    "companyName": "Okafor Holdings",
+    "email": "samuel.okafor@okaforholdings.com",
+    "phone": "+1 (415) 555-0834",
+    "address": "88 Embarcadero Center",
+    "clientType": "corporate"
+  }
+]
