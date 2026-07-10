@@ -4,17 +4,26 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Sparkles, Save, CheckCircle2, ArrowLeft } from "lucide-react";
+import { Sparkles, Save, CheckCircle2, ArrowLeft, Eye } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { templateService } from "@/services";
 import { TemplateDetailsForm } from "@/features/templates/components/template-details-form";
 import { LayoutOptionsPanel } from "@/features/templates/components/layout-options-panel";
 import { SectionBuilder } from "@/features/templates/components/section-builder";
 import { AiGeneratorPanel } from "@/features/templates/components/ai-generator-panel";
+import { TemplatePreviewPanel } from "@/features/templates/components/template-preview-panel";
 import { createBlankTemplate, createSectionInstance } from "@/features/templates/lib/default-template";
 import {
   templateFormSchema,
@@ -38,6 +47,7 @@ export function TemplateBuilder({
 }: TemplateBuilderProps) {
   const router = useRouter();
   const [aiPanelOpen, setAiPanelOpen] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [aiGenerated, setAiGenerated] = useState(initialAiGenerated);
 
@@ -52,7 +62,8 @@ export function TemplateBuilder({
     defaultValues: initialValues ?? createBlankTemplate(),
   });
 
-  const sections = watch("sections");
+  const watchedValues = watch();
+  const sections = watchedValues.sections;
 
   const handleAiApply = (suggestion: AiTemplateSuggestion) => {
     setAiGenerated(true);
@@ -114,7 +125,7 @@ export function TemplateBuilder({
   );
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6 pb-24">
+    <div className="mx-auto max-w-[1440px] space-y-6 pb-24">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <Link
@@ -130,38 +141,53 @@ export function TemplateBuilder({
             Configure details, layout, and drag-and-drop sections for your report template.
           </p>
         </div>
-        <Button variant="outline" onClick={() => setAiPanelOpen(true)}>
-          <Sparkles className="size-4 text-primary" /> Generate with AI
-        </Button>
+        <div className="flex shrink-0 gap-2">
+          <Button variant="outline" className="lg:hidden" onClick={() => setPreviewOpen(true)}>
+            <Eye className="size-4" /> Preview
+          </Button>
+          <Button variant="outline" onClick={() => setAiPanelOpen(true)}>
+            <Sparkles className="size-4 text-primary" /> Generate with AI
+          </Button>
+        </div>
       </div>
 
-      <Tabs defaultValue="details">
-        <TabsList>
-          <TabsTrigger value="details">Details</TabsTrigger>
-          <TabsTrigger value="layout">Layout</TabsTrigger>
-          <TabsTrigger value="sections">
-            Sections{sections.length > 0 ? ` (${sections.length})` : ""}
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent value="details" className="mt-4">
-          <TemplateDetailsForm control={control} errors={errors} />
-        </TabsContent>
-        <TabsContent value="layout" className="mt-4">
-          <LayoutOptionsPanel control={control} />
-        </TabsContent>
-        <TabsContent value="sections" className="mt-4">
-          {errors.sections && (
-            <p className="mb-3 text-xs text-destructive">{errors.sections.message}</p>
-          )}
-          <SectionBuilder
-            sections={sections}
-            onSectionsChange={(next) => setValue("sections", next, { shouldValidate: true })}
-          />
-        </TabsContent>
-      </Tabs>
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_400px]">
+        <div className="min-w-0">
+          <Tabs defaultValue="details">
+            <TabsList>
+              <TabsTrigger value="details">Details</TabsTrigger>
+              <TabsTrigger value="layout">Layout</TabsTrigger>
+              <TabsTrigger value="sections">
+                Sections{sections.length > 0 ? ` (${sections.length})` : ""}
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="details" className="mt-4">
+              <TemplateDetailsForm control={control} errors={errors} />
+            </TabsContent>
+            <TabsContent value="layout" className="mt-4">
+              <LayoutOptionsPanel control={control} />
+            </TabsContent>
+            <TabsContent value="sections" className="mt-4">
+              {errors.sections && (
+                <p className="mb-3 text-xs text-destructive">{errors.sections.message}</p>
+              )}
+              <SectionBuilder
+                sections={sections}
+                onSectionsChange={(next) => setValue("sections", next, { shouldValidate: true })}
+              />
+            </TabsContent>
+          </Tabs>
+        </div>
+
+        <div className="hidden lg:block">
+          <Card className="sticky top-4 h-[calc(100vh-140px)] gap-0 overflow-hidden py-0">
+            <TemplatePreviewPanel values={watchedValues} className="h-full" />
+          </Card>
+        </div>
+      </div>
 
       <div className="fixed inset-x-0 bottom-0 z-20 border-t bg-background/95 backdrop-blur md:left-64">
-        <div className="mx-auto flex max-w-5xl items-center justify-end gap-2 px-4 py-3 md:px-6">
+        <div className="mx-auto flex max-w-[1440px] items-center justify-end gap-2 px-4 py-3 md:px-6">
           <Button variant="outline" onClick={onSubmitDraft} disabled={saving}>
             <Save className="size-4" /> Save as Draft
           </Button>
@@ -176,6 +202,16 @@ export function TemplateBuilder({
         onOpenChange={setAiPanelOpen}
         onApply={handleAiApply}
       />
+
+      <Sheet open={previewOpen} onOpenChange={setPreviewOpen}>
+        <SheetContent className="flex w-full flex-col gap-0 p-0 sm:max-w-md">
+          <SheetHeader className="sr-only">
+            <SheetTitle>Live Preview</SheetTitle>
+            <SheetDescription>Preview of the report template being built.</SheetDescription>
+          </SheetHeader>
+          <TemplatePreviewPanel values={watchedValues} className="h-full" />
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
