@@ -90,7 +90,7 @@ export function buildReportHtmlDocument(ctx: ReportRenderContext): string {
   const sectionsHtml = sections
     .map((section) => {
       const bodyHtml =
-        section.type === "signature" && report.signatures.length > 0
+        section.type === "signature" && report.signatures && report.signatures.length > 0
           ? buildSignatureBlockHtml(report.signatures)
           : section.html;
       return `

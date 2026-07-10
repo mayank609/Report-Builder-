@@ -67,7 +67,7 @@ export function ReportSignatureDialog({
         signedAt: new Date().toISOString(),
       };
       await reportService.update(report.id, {
-        signatures: [...report.signatures.filter((s) => s.role !== role), signature],
+        signatures: [...(report.signatures || []).filter((s) => s.role !== role), signature],
       });
       toast.success("Signature added to report");
       onSigned();
