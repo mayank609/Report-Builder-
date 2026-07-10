@@ -1,5 +1,7 @@
 import { buildReportHtmlDocument, type ReportRenderContext } from "@/lib/pdf/report-html";
 import { getSampleSectionHtml } from "@/lib/pdf/sample-section-content";
+import { withChart } from "@/lib/pdf/charts";
+import { SAMPLE_PROJECT } from "@/lib/pdf/sample-project";
 import type { TemplateFormValues } from "./template-schema";
 
 /**
@@ -43,7 +45,7 @@ export function buildTemplatePreviewHtml(values: TemplateFormValues): string {
         sectionId: s.id,
         type: s.type,
         title: s.title,
-        html: getSampleSectionHtml(s.type),
+        html: withChart(s.type, getSampleSectionHtml(s.type), SAMPLE_PROJECT),
         order: s.order,
       })),
       layout: values.layout,

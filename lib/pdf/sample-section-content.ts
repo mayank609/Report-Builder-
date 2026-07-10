@@ -67,9 +67,9 @@ export function getSampleSectionHtml(type: SectionType): string {
       </tbody></table>`;
     case "cost_forecast":
       return `<table class="report-table"><tbody>
-        <tr><th>Budget at Completion</th><td>$4,200,000</td><th>Actual Cost to Date</th><td>$1,890,000</td></tr>
-        <tr><th>Percent Complete</th><td>42%</td><th>Cost Performance Index</th><td>0.98</td></tr>
-        <tr><th>Forecast at Completion</th><td colspan="3">$4,285,000</td></tr>
+        <tr><th>Budget at Completion</th><td>$4,200,000</td><th>Actual Cost to Date</th><td>$2,730,000</td></tr>
+        <tr><th>Percent Complete</th><td>65%</td><th>Cost Performance Index</th><td>1.02</td></tr>
+        <tr><th>Forecast at Completion</th><td colspan="3">$4,120,000</td></tr>
       </tbody></table>`;
     case "timeline":
       return `<table class="report-table"><thead><tr><th>Milestone</th><th>Planned</th><th>Actual</th><th>Status</th></tr></thead><tbody>

@@ -32,6 +32,7 @@ import { ReportDocumentViewer } from "@/features/reports/components/report-docum
 import { ReportEditSheet } from "@/features/reports/components/report-edit-sheet";
 import { downloadReportPdf } from "@/features/reports/lib/download-report-pdf";
 import { buildReportHtmlDocument } from "@/lib/pdf/report-html";
+import { withChart } from "@/lib/pdf/charts";
 import { generateReportFromContext } from "@/lib/ai/client";
 import { builderService, clientService, contractorService, engineerService, projectService, reportService, templateService } from "@/services";
 import { formatDateTime } from "@/lib/utils";
@@ -112,7 +113,7 @@ export default function ReportPreviewPage({
 
       const updatedSections = report.sections.map((section) => {
         const match = suggestion.sections.find((s) => s.sectionId === section.sectionId);
-        return match ? { ...section, html: match.html } : section;
+        return match ? { ...section, html: withChart(section.type, match.html, project) } : section;
       });
 
       await reportService.update(report.id, {

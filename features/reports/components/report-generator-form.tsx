@@ -28,6 +28,7 @@ import {
   type GenerateReportFormValues,
 } from "@/features/reports/lib/generate-report-schema";
 import { generateReportFromContext } from "@/lib/ai/client";
+import { withChart } from "@/lib/pdf/charts";
 import { reportService, templateService } from "@/services";
 import { formatDate } from "@/lib/utils";
 import type { GeneratedReport, ReportSectionContent } from "@/types";
@@ -130,11 +131,12 @@ export function ReportGeneratorForm() {
 
       const sections: ReportSectionContent[] = visibleSections.map((section) => {
         const match = suggestion.sections.find((s) => s.sectionId === section.id);
+        const html = match?.html ?? "<p>No content generated for this section.</p>";
         return {
           sectionId: section.id,
           type: section.type,
           title: section.title,
-          html: match?.html ?? "<p>No content generated for this section.</p>",
+          html: withChart(section.type, html, project),
           order: section.order,
         };
       });

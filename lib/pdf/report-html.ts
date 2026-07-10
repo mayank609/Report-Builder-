@@ -134,6 +134,8 @@ export function buildReportHtmlDocument(ctx: ReportRenderContext): string {
   .report-table { width: 100%; border-collapse: collapse; font-size: 12px; margin: 8px 0 16px; }
   .report-table th, .report-table td { border: 1px solid #e5e7eb; padding: 6px 10px; text-align: left; vertical-align: top; }
   .report-table th { background: #f9fafb; font-weight: 600; }
+  .report-chart { margin: 4px 0 16px; break-inside: avoid; }
+  .report-chart svg { width: 100%; height: auto; display: block; }
 </style>
 </head>
 <body>

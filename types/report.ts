@@ -1,8 +1,10 @@
+import type { SectionType } from "./section";
+
 export type ReportStatus = "draft" | "generating" | "completed" | "failed";
 
 export interface ReportSectionContent {
   sectionId: string;
-  type: string;
+  type: SectionType;
   title: string;
   html: string;
   order: number;
