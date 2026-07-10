@@ -68,6 +68,61 @@
       { "url": "/mock-images/site-progress-1.jpg", "caption": "Level 3 structural steel installation", "capturedAt": "2026-07-06" },
       { "url": "/mock-images/site-progress-2.jpg", "caption": "East wing MEP rough-in", "capturedAt": "2026-07-07" },
       { "url": "/mock-images/site-progress-3.jpg", "caption": "Level 4 framing layout", "capturedAt": "2026-07-09" }
+    ],
+    "weatherLog": [
+      { "date": "2026-07-06", "conditions": "Clear", "tempHighF": 71, "tempLowF": 58, "precipitationIn": 0, "windMph": 8, "workableHours": 8, "delayNotes": "None" },
+      { "date": "2026-07-07", "conditions": "Partly Cloudy", "tempHighF": 68, "tempLowF": 56, "precipitationIn": 0, "windMph": 12, "workableHours": 8, "delayNotes": "None" },
+      { "date": "2026-07-08", "conditions": "Clear", "tempHighF": 73, "tempLowF": 59, "precipitationIn": 0, "windMph": 6, "workableHours": 8, "delayNotes": "None" },
+      { "date": "2026-07-09", "conditions": "Overcast", "tempHighF": 65, "tempLowF": 55, "precipitationIn": 0.1, "windMph": 14, "workableHours": 7.5, "delayNotes": "Light drizzle mid-morning, 30 min crane hold" }
+    ],
+    "rfis": [
+      { "id": "RFI-041", "subject": "Confirm rooftop terrace guardrail attachment detail", "dateSubmitted": "2026-06-28", "submittedBy": "David Reyes", "assignedTo": "Dr. Susan Park", "status": "answered", "response": "Use detail 5/S-401 with epoxy anchors per spec section 05500.", "dateAnswered": "2026-07-02", "costImpact": 0, "scheduleImpactDays": 0 },
+      { "id": "RFI-042", "subject": "Level 4 smart-home conduit routing conflict with beam B-12", "dateSubmitted": "2026-07-05", "submittedBy": "Angela Whitfield", "assignedTo": "Dr. Susan Park", "status": "open", "response": "", "dateAnswered": null, "costImpact": 0, "scheduleImpactDays": 0 }
+    ],
+    "changeOrders": [
+      { "id": "CO-006", "description": "Upgrade rooftop terrace decking to composite material per owner request", "date": "2026-06-15", "requestedBy": "Jonathan Pierce", "costImpact": 28500, "scheduleImpactDays": 2, "status": "approved" },
+      { "id": "CO-007", "description": "Add EV charger rough-in at garage level", "date": "2026-07-01", "requestedBy": "Jonathan Pierce", "costImpact": 6200, "scheduleImpactDays": 0, "status": "pending" }
+    ],
+    "submittals": [
+      { "id": "SUB-018", "name": "Curtain wall glazing shop drawings", "type": "Shop Drawing", "submittedDate": "2026-06-20", "reviewer": "Dr. Susan Park", "status": "approved_as_noted", "dueDate": "2026-07-04" },
+      { "id": "SUB-019", "name": "Smart-home automation panel cut sheets", "type": "Product Data", "submittedDate": "2026-07-03", "reviewer": "Elena Vasquez", "status": "pending", "dueDate": "2026-07-17" }
+    ],
+    "safetyIncidents": [
+      { "date": "2026-07-09", "type": "toolbox_talk", "description": "Weekly toolbox talk on fall protection and guardrail use at level 4 open edges.", "severity": "low", "involvedParty": "All trades", "correctiveAction": "N/A", "status": "resolved" },
+      { "date": "2026-06-30", "type": "near_miss", "description": "Unsecured plywood sheet blew off level 3 staging in high wind, no injury.", "severity": "medium", "involvedParty": "Framing crew", "correctiveAction": "All staged material now strapped down each evening; added to daily checklist.", "status": "resolved" }
+    ],
+    "qualityInspections": [
+      { "date": "2026-07-08", "area": "Level 3 framing", "inspector": "Dr. Susan Park", "result": "pass", "deficiencies": "None", "reinspectionDate": null },
+      { "date": "2026-06-25", "area": "Foundation waterproofing", "inspector": "Wei Zhang", "result": "conditional_pass", "deficiencies": "Two locations needed additional membrane overlap at cold joints.", "reinspectionDate": "2026-06-29" }
+    ],
+    "punchList": [
+      { "id": "PL-101", "area": "Level 2 bathroom", "item": "Re-caulk tile perimeter at tub surround", "trade": "Tile", "priority": "low", "status": "open", "assignedTo": "Reyes Concrete & Masonry", "dueDate": "2026-08-10" },
+      { "id": "PL-102", "area": "Garage", "item": "Touch-up paint on damaged drywall corner", "trade": "Painting", "priority": "low", "status": "open", "assignedTo": "General Laborers", "dueDate": "2026-08-10" }
+    ],
+    "deliveries": [
+      { "date": "2026-07-09", "vendor": "Bay Area Ductwork Supply", "material": "HVAC ductwork sections", "quantity": 42, "unit": "pieces", "condition": "good", "receivedBy": "Site Supervisor" },
+      { "date": "2026-07-07", "vendor": "Golden Gate Concrete", "material": "Ready-mix concrete", "quantity": 38, "unit": "cu yd", "condition": "good", "receivedBy": "David Reyes" }
+    ],
+    "subcontractorLog": [
+      { "date": "2026-07-09", "contractor": "Whitfield Electrical Services", "trade": "Electrical", "crewSize": 6, "scopeToday": "Continued level 4 electrical rough-in, panel labeling on level 2.", "status": "on_schedule" },
+      { "date": "2026-07-09", "contractor": "Baxter Plumbing & Mechanical", "trade": "Plumbing & HVAC", "crewSize": 5, "scopeToday": "HVAC ductwork staging, level 3 plumbing rough-in continued.", "status": "on_schedule" }
+    ],
+    "permits": [
+      { "type": "Building Permit", "permitNumber": "SF-BP-2026-04471", "status": "approved", "issueDate": "2026-02-01", "expiryDate": "2027-02-01", "lastInspectionType": "Framing", "lastInspectionDate": "2026-07-08", "lastInspectionResult": "pass" },
+      { "type": "Electrical Permit", "permitNumber": "SF-EP-2026-04472", "status": "approved", "issueDate": "2026-02-01", "expiryDate": "2027-02-01", "lastInspectionType": "Rough-In", "lastInspectionDate": null, "lastInspectionResult": "scheduled" }
+    ],
+    "risks": [
+      { "id": "RSK-011", "category": "Schedule", "description": "Long-lead smart-home automation equipment may delay level 4 MEP closeout.", "likelihood": "medium", "impact": "medium", "mitigation": "Expedited shipping requested; alternate vendor identified as backup.", "owner": "Michael Sinclair", "status": "open" },
+      { "id": "RSK-012", "category": "Weather", "description": "Rooftop terrace waterproofing sensitive to summer fog/drizzle window.", "likelihood": "low", "impact": "medium", "mitigation": "Schedule pour during forecasted dry stretch; tenting on standby.", "owner": "David Reyes", "status": "open" }
+    ],
+    "lookAheadSchedule": [
+      { "activity": "Level 4 wall framing completion", "trade": "Framing", "plannedStart": "2026-07-10", "plannedEnd": "2026-07-14", "notes": "Requires crane availability confirmed for Thu/Fri." },
+      { "activity": "Level 3 plumbing rough-in inspection", "trade": "Plumbing", "plannedStart": "2026-07-13", "plannedEnd": "2026-07-13", "notes": "Coordinate with city inspector." },
+      { "activity": "Rooftop terrace waterproofing", "trade": "Roofing/Waterproofing", "plannedStart": "2026-07-15", "plannedEnd": "2026-07-18", "notes": "Weather-dependent, monitor forecast." }
+    ],
+    "visitorLog": [
+      { "date": "2026-07-08", "visitorName": "Jonathan Pierce", "company": "Pierce Family Trust", "purpose": "Owner walkthrough of level 3", "timeIn": "10:00", "timeOut": "11:15", "escortedBy": "Michael Sinclair" },
+      { "date": "2026-07-02", "visitorName": "City Inspector", "company": "SF Dept. of Building Inspection", "purpose": "Foundation waterproofing reinspection", "timeIn": "09:00", "timeOut": "09:45", "escortedBy": "Wei Zhang" }
     ]
   },
   {
@@ -133,6 +188,57 @@
     "images": [
       { "url": "/mock-images/tower-progress-1.jpg", "caption": "Floor 9 concrete pour", "capturedAt": "2026-07-07" },
       { "url": "/mock-images/tower-progress-2.jpg", "caption": "Curtain wall mockup", "capturedAt": "2026-07-08" }
+    ],
+    "weatherLog": [
+      { "date": "2026-07-07", "conditions": "Humid", "tempHighF": 88, "tempLowF": 74, "precipitationIn": 0, "windMph": 9, "workableHours": 8, "delayNotes": "None" },
+      { "date": "2026-07-08", "conditions": "Thunderstorms", "tempHighF": 82, "tempLowF": 71, "precipitationIn": 1.2, "windMph": 28, "workableHours": 6, "delayNotes": "Crane operations halted 2 hours for lightning safety." },
+      { "date": "2026-07-09", "conditions": "Clear", "tempHighF": 85, "tempLowF": 72, "precipitationIn": 0, "windMph": 10, "workableHours": 8, "delayNotes": "None" }
+    ],
+    "rfis": [
+      { "id": "RFI-118", "subject": "Curtain wall anchor embed conflict with post-tension tendons at floor 11", "dateSubmitted": "2026-06-30", "submittedBy": "Grace Lin", "assignedTo": "Marcus Bell", "status": "answered", "response": "Shift embed plates 6in per revised detail 12/S-210, issued 07/03.", "dateAnswered": "2026-07-03", "costImpact": 4200, "scheduleImpactDays": 1 },
+      { "id": "RFI-119", "subject": "Confirm fire-rating for lobby curtain wall mullions", "dateSubmitted": "2026-07-06", "submittedBy": "Angela Whitfield", "assignedTo": "Marcus Bell", "status": "open", "response": "", "dateAnswered": null, "costImpact": 0, "scheduleImpactDays": 0 }
+    ],
+    "changeOrders": [
+      { "id": "CO-014", "description": "Upgrade lobby curtain wall to higher-performance low-E glazing", "date": "2026-06-10", "requestedBy": "Rachel Kim", "costImpact": 340000, "scheduleImpactDays": 5, "status": "approved" },
+      { "id": "CO-015", "description": "Add rooftop amenity deck structural reinforcement for future pool", "date": "2026-07-02", "requestedBy": "Rachel Kim", "costImpact": 185000, "scheduleImpactDays": 10, "status": "pending" }
+    ],
+    "submittals": [
+      { "id": "SUB-201", "name": "Tower crane erection plan", "type": "Method Statement", "submittedDate": "2025-10-01", "reviewer": "Marcus Bell", "status": "approved", "dueDate": "2025-10-15" },
+      { "id": "SUB-202", "name": "Curtain wall unitized panel shop drawings", "type": "Shop Drawing", "submittedDate": "2026-06-25", "reviewer": "Marcus Bell", "status": "revise_resubmit", "dueDate": "2026-07-09" }
+    ],
+    "safetyIncidents": [
+      { "date": "2026-07-08", "type": "incident", "description": "Worker treated for minor laceration from sheet metal edge on floor 6; first aid administered on site.", "severity": "low", "involvedParty": "MEP subcontractor crew member", "correctiveAction": "Reinforced cut-resistant glove requirement for sheet metal handling at next toolbox talk.", "status": "resolved" },
+      { "date": "2026-07-01", "type": "safety_inspection", "description": "Weekly fall-protection and perimeter guardrail audit across floors 8-11.", "severity": "low", "involvedParty": "All trades", "correctiveAction": "Two guardrail sections re-secured on floor 10.", "status": "resolved" }
+    ],
+    "qualityInspections": [
+      { "date": "2026-07-07", "area": "Floor 9 post-tension slab", "inspector": "Marcus Bell", "result": "pass", "deficiencies": "None", "reinspectionDate": null },
+      { "date": "2026-06-29", "area": "Floor 7 curtain wall anchor embeds", "inspector": "Grace Lin", "result": "fail", "deficiencies": "3 embed plates out of tolerance, required grinding and re-shimming.", "reinspectionDate": "2026-07-03" }
+    ],
+    "punchList": [
+      { "id": "PL-301", "area": "Floor 4 elevator lobby", "item": "Repair scuffed drywall corner bead", "trade": "Drywall", "priority": "low", "status": "open", "assignedTo": "General Laborers", "dueDate": "2026-09-01" }
+    ],
+    "deliveries": [
+      { "date": "2026-07-08", "vendor": "Empire Steel Supply", "material": "Structural steel beams (floor 11)", "quantity": 64, "unit": "pieces", "condition": "good", "receivedBy": "Grace Lin" },
+      { "date": "2026-07-05", "vendor": "Atlantic Glazing Systems", "material": "Curtain wall unitized panels", "quantity": 18, "unit": "panels", "condition": "partial", "receivedBy": "Angela Whitfield" }
+    ],
+    "subcontractorLog": [
+      { "date": "2026-07-09", "contractor": "Lin Structural Steel", "trade": "Structural Steel", "crewSize": 22, "scopeToday": "Floor 11 steel erection, floor 10 formwork installation.", "status": "on_schedule" },
+      { "date": "2026-07-09", "contractor": "Whitfield Electrical Services", "trade": "Electrical", "crewSize": 14, "scopeToday": "Floors 4-6 MEP rough-in continued.", "status": "on_schedule" }
+    ],
+    "permits": [
+      { "type": "Building Permit", "permitNumber": "NYC-BP-2025-88213", "status": "approved", "issueDate": "2025-08-15", "expiryDate": "2028-08-15", "lastInspectionType": "Structural Progress", "lastInspectionDate": "2026-07-07", "lastInspectionResult": "pass" },
+      { "type": "Crane Operating Permit", "permitNumber": "NYC-CR-2025-04410", "status": "approved", "issueDate": "2025-09-20", "expiryDate": "2026-09-20", "lastInspectionType": "Annual Crane Inspection", "lastInspectionDate": "2026-05-01", "lastInspectionResult": "pass" }
+    ],
+    "risks": [
+      { "id": "RSK-101", "category": "Schedule", "description": "Curtain wall panel fabrication delays could push enclosure milestone.", "likelihood": "high", "impact": "high", "mitigation": "Weekly fabricator progress calls; expedite fee approved for critical floors.", "owner": "Priya Nair", "status": "open" },
+      { "id": "RSK-102", "category": "Cost", "description": "Structural steel pricing volatility on remaining floor 15-28 tonnage.", "likelihood": "medium", "impact": "high", "mitigation": "Bulk order locked in at current pricing through Q4.", "owner": "Priya Nair", "status": "mitigated" }
+    ],
+    "lookAheadSchedule": [
+      { "activity": "Floor 12 steel erection", "trade": "Structural Steel", "plannedStart": "2026-07-13", "plannedEnd": "2026-07-18", "notes": "Tower crane 2 dedicated to this activity." },
+      { "activity": "Floor 9-10 curtain wall installation start", "trade": "Glazing", "plannedStart": "2026-07-14", "plannedEnd": "2026-07-25", "notes": "Pending panel delivery confirmation." }
+    ],
+    "visitorLog": [
+      { "date": "2026-07-06", "visitorName": "Rachel Kim", "company": "Horizon Real Estate Partners", "purpose": "Monthly owner progress walkthrough", "timeIn": "13:00", "timeOut": "14:30", "escortedBy": "Priya Nair" }
     ]
   },
   {
@@ -191,6 +297,44 @@
     ],
     "images": [
       { "url": "/mock-images/municipal-progress-1.jpg", "caption": "CMU wall installation north block", "capturedAt": "2026-06-20" }
+    ],
+    "weatherLog": [
+      { "date": "2026-06-20", "conditions": "Clear", "tempHighF": 97, "tempLowF": 76, "precipitationIn": 0, "windMph": 7, "workableHours": 7, "delayNotes": "Heat advisory shortened afternoon shift by 1 hour." },
+      { "date": "2026-06-21", "conditions": "Clear", "tempHighF": 99, "tempLowF": 78, "precipitationIn": 0, "windMph": 5, "workableHours": 1, "delayNotes": "Work paused for budget review, not weather-related." }
+    ],
+    "rfis": [
+      { "id": "RFI-007", "subject": "Confirm community hall roof truss bearing detail", "dateSubmitted": "2026-05-10", "submittedBy": "Grace Lin", "assignedTo": "Wei Zhang", "status": "answered", "response": "Use bearing detail 8/S-105 with reinforced ledger.", "dateAnswered": "2026-05-18", "costImpact": 0, "scheduleImpactDays": 3 }
+    ],
+    "changeOrders": [
+      { "id": "CO-002", "description": "Add accessible ramp at permitting center entrance per ADA review comments", "date": "2026-04-22", "requestedBy": "City of Austin", "costImpact": 42000, "scheduleImpactDays": 7, "status": "approved" }
+    ],
+    "submittals": [
+      { "id": "SUB-055", "name": "CMU block mix design", "type": "Material Submittal", "submittedDate": "2025-06-01", "reviewer": "Wei Zhang", "status": "approved", "dueDate": "2025-06-15" }
+    ],
+    "safetyIncidents": [
+      { "date": "2026-06-20", "type": "toolbox_talk", "description": "Heat illness prevention briefing given extreme temperatures; mandatory water breaks every 45 minutes.", "severity": "medium", "involvedParty": "All trades", "correctiveAction": "Shortened work hours implemented for remainder of week.", "status": "resolved" }
+    ],
+    "qualityInspections": [
+      { "date": "2026-06-18", "area": "North block CMU walls", "inspector": "Wei Zhang", "result": "pass", "deficiencies": "None", "reinspectionDate": null }
+    ],
+    "punchList": [],
+    "deliveries": [
+      { "date": "2026-06-19", "vendor": "Texas Steel Fabricators", "material": "Structural steel delivery", "quantity": 12, "unit": "tons", "condition": "good", "receivedBy": "Grace Lin" }
+    ],
+    "subcontractorLog": [
+      { "date": "2026-06-20", "contractor": "Reyes Concrete & Masonry", "trade": "Concrete & Masonry", "crewSize": 16, "scopeToday": "CMU wall installation on north block.", "status": "delayed" }
+    ],
+    "permits": [
+      { "type": "Building Permit", "permitNumber": "ATX-BP-2025-19042", "status": "approved", "issueDate": "2025-05-01", "expiryDate": "2027-05-01", "lastInspectionType": "Foundation", "lastInspectionDate": "2025-09-18", "lastInspectionResult": "pass" }
+    ],
+    "risks": [
+      { "id": "RSK-201", "category": "Funding", "description": "Project on hold pending city council budget review; extended pause could impact subcontractor availability.", "likelihood": "high", "impact": "high", "mitigation": "Weekly check-ins with city procurement office; key subs placed on standby retainer.", "owner": "Carlos Mendoza", "status": "open" }
+    ],
+    "lookAheadSchedule": [
+      { "activity": "Resume structural steel erection (pending city approval)", "trade": "Structural Steel", "plannedStart": "2026-07-15", "plannedEnd": "2026-08-01", "notes": "Contingent on city council budget vote." }
+    ],
+    "visitorLog": [
+      { "date": "2026-06-21", "visitorName": "City Council Budget Committee", "company": "City of Austin", "purpose": "Site review ahead of budget vote", "timeIn": "11:00", "timeOut": "12:00", "escortedBy": "Carlos Mendoza" }
     ]
   },
   {
@@ -246,6 +390,43 @@
     ],
     "images": [
       { "url": "/mock-images/warehouse-final-1.jpg", "caption": "Completed warehouse exterior", "capturedAt": "2025-10-22" }
+    ],
+    "weatherLog": [
+      { "date": "2025-10-20", "conditions": "Clear", "tempHighF": 71, "tempLowF": 54, "precipitationIn": 0, "windMph": 9, "workableHours": 8, "delayNotes": "None" }
+    ],
+    "rfis": [
+      { "id": "RFI-301", "subject": "Confirm dock leveler pit dimensions vs. equipment cut sheets", "dateSubmitted": "2025-04-02", "submittedBy": "Grace Lin", "assignedTo": "Marcus Bell", "status": "closed", "response": "Pit dimensions confirmed per revised detail 3/A-501.", "dateAnswered": "2025-04-09", "costImpact": 0, "scheduleImpactDays": 0 }
+    ],
+    "changeOrders": [
+      { "id": "CO-101", "description": "Add 4 additional dock doors on east elevation per tenant request", "date": "2025-03-01", "requestedBy": "Samuel Okafor", "costImpact": 96000, "scheduleImpactDays": 6, "status": "approved" }
+    ],
+    "submittals": [
+      { "id": "SUB-301", "name": "High-bay racking system shop drawings", "type": "Shop Drawing", "submittedDate": "2025-06-01", "reviewer": "Marcus Bell", "status": "approved", "dueDate": "2025-06-15" }
+    ],
+    "safetyIncidents": [
+      { "date": "2025-10-15", "type": "safety_inspection", "description": "Final safety walkthrough prior to substantial completion; all guardrails and fall protection removed per closeout checklist.", "severity": "low", "involvedParty": "All trades", "correctiveAction": "None required.", "status": "resolved" }
+    ],
+    "qualityInspections": [
+      { "date": "2025-10-18", "area": "High-bay racking system", "inspector": "Marcus Bell", "result": "pass", "deficiencies": "None", "reinspectionDate": null }
+    ],
+    "punchList": [
+      { "id": "PL-401", "area": "Office mezzanine", "item": "Replace cracked floor tile near break room", "trade": "Flooring", "priority": "low", "status": "closed", "assignedTo": "General Laborers", "dueDate": "2025-10-20" }
+    ],
+    "deliveries": [
+      { "date": "2025-10-05", "vendor": "Pacific Racking Solutions", "material": "High-bay racking components", "quantity": 1200, "unit": "pieces", "condition": "good", "receivedBy": "Grace Lin" }
+    ],
+    "subcontractorLog": [
+      { "date": "2025-10-20", "contractor": "Lin Structural Steel", "trade": "Structural Steel", "crewSize": 4, "scopeToday": "Final steel touch-ups and closeout inspection support.", "status": "ahead" }
+    ],
+    "permits": [
+      { "type": "Certificate of Occupancy", "permitNumber": "OAK-CO-2025-3310", "status": "approved", "issueDate": "2025-10-22", "expiryDate": null, "lastInspectionType": "Final", "lastInspectionDate": "2025-10-21", "lastInspectionResult": "pass" }
+    ],
+    "risks": [
+      { "id": "RSK-301", "category": "Closeout", "description": "Final commissioning documentation from racking vendor pending submission.", "likelihood": "low", "impact": "low", "mitigation": "Vendor committed to delivery within 5 business days of completion.", "owner": "Michael Sinclair", "status": "closed" }
+    ],
+    "lookAheadSchedule": [],
+    "visitorLog": [
+      { "date": "2025-10-21", "visitorName": "Samuel Okafor", "company": "Okafor Holdings", "purpose": "Final walkthrough and handover", "timeIn": "09:00", "timeOut": "11:00", "escortedBy": "Michael Sinclair" }
     ]
   }
 ]

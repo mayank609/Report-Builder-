@@ -7,6 +7,7 @@ import type {
   AiTemplateSuggestion,
   Project,
   ReportTemplate,
+  SectionType,
 } from "@/types";
 
 const MODEL_NAME = process.env.GEMINI_MODEL || "gemini-2.5-flash";
@@ -113,14 +114,26 @@ function buildFallbackTemplateSuggestion(userPrompt: string): AiTemplateSuggesti
   const lower = userPrompt.toLowerCase();
 
   const isWeekly = /weekly/.test(lower);
-  const isSafety = /safety|audit|inspection/.test(lower);
-  const isBudget = /budget|cost|financial/.test(lower);
+  const isSafety = /safety|hazard|incident/.test(lower);
+  const isQuality = /quality|inspection|punch\s?list|deficienc/.test(lower);
+  const isAudit = /audit/.test(lower);
+  const isBudget = /budget|cost|financial|earned value/.test(lower);
+  const isChangeOrder = /change order|rfi|submittal/.test(lower);
+  const isCompliance = /permit|compliance|code/.test(lower);
+  const isSchedule = /schedule|milestone|look.?ahead|timeline/.test(lower);
+  const isFinal = /final|completion|closeout|handover/.test(lower);
 
-  const reportType = isSafety
-    ? "safety_audit"
-    : isWeekly
-      ? "weekly_progress"
-      : "daily_progress";
+  const reportType = isFinal
+    ? "final_completion"
+    : isAudit && isQuality
+      ? "quality_audit"
+      : isAudit && isSafety
+        ? "safety_audit"
+        : isChangeOrder || isCompliance
+          ? "inspection"
+          : isWeekly
+            ? "weekly_progress"
+            : "daily_progress";
 
   const baseSections: AiTemplateSuggestion["sections"] = [
     {
@@ -134,6 +147,11 @@ function buildFallbackTemplateSuggestion(userPrompt: string): AiTemplateSuggesti
       description: "General contractor company and licensing details.",
     },
     {
+      type: "weather_conditions",
+      title: "Weather & Site Conditions",
+      description: "Temperature, precipitation, wind and workable hours.",
+    },
+    {
       type: isWeekly ? "weekly_progress" : "daily_progress",
       title: isWeekly ? "Weekly Progress Summary" : "Daily Progress Summary",
       description: "Narrative summary of work completed during the reporting period.",
@@ -144,11 +162,39 @@ function buildFallbackTemplateSuggestion(userPrompt: string): AiTemplateSuggesti
       description: "Crew headcount and hours logged by trade.",
     },
     {
+      type: "subcontractor_log",
+      title: "Subcontractor Log",
+      description: "Subcontractors on site, crew size and scope performed.",
+    },
+    {
       type: "material_usage",
       title: "Material Usage",
       description: "Planned vs. used quantities for key materials.",
     },
+    {
+      type: "deliveries",
+      title: "Deliveries",
+      description: "Material and equipment deliveries received on site.",
+    },
+    {
+      type: "equipment",
+      title: "Equipment Utilization",
+      description: "Equipment on site, utilization and operational status.",
+    },
   ];
+
+  if (isSchedule || isWeekly) {
+    baseSections.push({
+      type: "timeline",
+      title: "Milestone Timeline",
+      description: "Milestones with planned vs. actual dates and status.",
+    });
+    baseSections.push({
+      type: "look_ahead_schedule",
+      title: "Two-Week Look-Ahead",
+      description: "Upcoming activities planned for the next reporting period.",
+    });
+  }
 
   if (isBudget) {
     baseSections.push({
@@ -156,13 +202,69 @@ function buildFallbackTemplateSuggestion(userPrompt: string): AiTemplateSuggesti
       title: "Budget Status",
       description: "Budget allocation and spend by category.",
     });
+    baseSections.push({
+      type: "cost_forecast",
+      title: "Cost Forecast & Earned Value",
+      description: "Earned value, cost/schedule performance and forecast at completion.",
+    });
+  }
+
+  if (isChangeOrder) {
+    baseSections.push(
+      {
+        type: "rfi_log",
+        title: "RFI Log",
+        description: "Requests for information, status and responses.",
+      },
+      {
+        type: "change_orders",
+        title: "Change Orders",
+        description: "Change order log with cost and schedule impact.",
+      },
+      {
+        type: "submittals",
+        title: "Submittals Log",
+        description: "Shop drawings and material submittals with review status.",
+      }
+    );
+  }
+
+  if (isQuality) {
+    baseSections.push(
+      {
+        type: "quality_inspection",
+        title: "Quality Control & Inspections",
+        description: "Quality control inspections, results and deficiencies.",
+      },
+      {
+        type: "punch_list",
+        title: "Punch List",
+        description: "Outstanding items requiring completion or rework.",
+      }
+    );
   }
 
   if (isSafety) {
     baseSections.push({
-      type: "recommendations",
-      title: "Safety Findings & Recommendations",
-      description: "Observed hazards, compliance notes, and corrective actions.",
+      type: "safety_incidents",
+      title: "Safety & Incident Log",
+      description: "Incidents, near-misses, toolbox talks and corrective actions.",
+    });
+  }
+
+  if (isCompliance) {
+    baseSections.push({
+      type: "permits_compliance",
+      title: "Permits & Compliance",
+      description: "Permit status, inspections and code compliance.",
+    });
+  }
+
+  if (isAudit || isSafety || isQuality) {
+    baseSections.push({
+      type: "risk_register",
+      title: "Risk Register",
+      description: "Identified risks, likelihood, impact and mitigation plans.",
     });
   }
 
@@ -176,6 +278,11 @@ function buildFallbackTemplateSuggestion(userPrompt: string): AiTemplateSuggesti
       type: "ai_summary",
       title: "AI Summary",
       description: "AI-generated executive summary of the reporting period.",
+    },
+    {
+      type: "recommendations",
+      title: isSafety ? "Safety Findings & Recommendations" : "Recommendations",
+      description: "Findings, risks and recommended next actions.",
     },
     {
       type: "signature",
@@ -192,14 +299,20 @@ function buildFallbackTemplateSuggestion(userPrompt: string): AiTemplateSuggesti
     recommendedTables: [
       "Material Usage Table",
       "Labour Summary Table",
-      ...(isBudget ? ["Budget Breakdown Table"] : []),
+      "Weather Log Table",
+      ...(isBudget ? ["Budget Breakdown Table", "Cost Forecast Table"] : []),
+      ...(isChangeOrder ? ["RFI Log Table", "Change Order Table", "Submittals Table"] : []),
+      ...(isQuality ? ["Quality Inspection Table", "Punch List Table"] : []),
+      ...(isSafety ? ["Safety Incident Table"] : []),
+      ...(isCompliance ? ["Permits & Compliance Table"] : []),
     ],
     formattingNotes:
       "Use a clean sans-serif font, generous whitespace, and a single accent color for headers and table borders.",
     summaryPrompts: [
       "Summarize overall progress against the schedule.",
-      "Highlight any safety incidents or delays.",
-      "Note material or labour shortages requiring attention.",
+      "Highlight any safety incidents, quality deficiencies, or delays.",
+      "Note material, labour, or subcontractor issues requiring attention.",
+      "Flag open RFIs, change orders, or compliance items awaiting response.",
     ],
     source: "fallback",
   };
@@ -246,7 +359,7 @@ function buildFallbackReportSuggestion(params: {
 }
 
 function renderFallbackSectionHtml(
-  type: string,
+  type: SectionType,
   project: Project,
   logsInRange: Project["dailyLogs"],
   params: {
@@ -329,12 +442,142 @@ function renderFallbackSectionHtml(
         "_",
         " "
       )}. Spend to date is $${project.spentBudget.toLocaleString()} of a $${project.totalBudget.toLocaleString()} total budget.</p>`;
-    case "recommendations":
-      return `<ul><li>Continue monitoring schedule adherence against milestone dates.</li><li>Review material remaining quantities to avoid delivery delays.</li><li>Confirm equipment maintenance schedules for idle units.</li></ul>`;
+    case "recommendations": {
+      const openRisks = project.risks.filter((r) => r.status === "open");
+      const items = [
+        "Continue monitoring schedule adherence against milestone dates.",
+        "Review material remaining quantities to avoid delivery delays.",
+        "Confirm equipment maintenance schedules for idle units.",
+        ...openRisks.map((r) => `Address open risk (${r.category}): ${r.description}`),
+      ];
+      return `<ul>${items.map((i) => `<li>${i}</li>`).join("")}</ul>`;
+    }
     case "signature":
       return `<p>Prepared by: _______________________&nbsp;&nbsp;&nbsp;&nbsp;Date: ______________</p><p>Reviewed by: _______________________&nbsp;&nbsp;&nbsp;&nbsp;Date: ______________</p>`;
     case "appendix":
       return `<p>No supplementary documents attached to this report.</p>`;
+    case "weather_conditions": {
+      const logs = project.weatherLog.filter(
+        (w) => w.date >= params.dateRangeStart && w.date <= params.dateRangeEnd
+      );
+      if (logs.length === 0) return `<p>No weather data recorded for this reporting period.</p>`;
+      return `<table class="report-table"><thead><tr><th>Date</th><th>Conditions</th><th>High / Low</th><th>Precip.</th><th>Wind</th><th>Workable Hours</th><th>Delay Notes</th></tr></thead><tbody>${logs
+        .map(
+          (w) =>
+            `<tr><td>${w.date}</td><td>${w.conditions}</td><td>${w.tempHighF}°F / ${w.tempLowF}°F</td><td>${w.precipitationIn}in</td><td>${w.windMph}mph</td><td>${w.workableHours}</td><td>${w.delayNotes}</td></tr>`
+        )
+        .join("")}</tbody></table>`;
+    }
+    case "look_ahead_schedule":
+      if (project.lookAheadSchedule.length === 0)
+        return `<p>No upcoming activities have been scheduled at this time.</p>`;
+      return `<table class="report-table"><thead><tr><th>Activity</th><th>Trade</th><th>Planned Start</th><th>Planned End</th><th>Notes</th></tr></thead><tbody>${project.lookAheadSchedule
+        .map(
+          (a) =>
+            `<tr><td>${a.activity}</td><td>${a.trade}</td><td>${a.plannedStart}</td><td>${a.plannedEnd}</td><td>${a.notes}</td></tr>`
+        )
+        .join("")}</tbody></table>`;
+    case "deliveries":
+      if (project.deliveries.length === 0) return `<p>No deliveries recorded for this reporting period.</p>`;
+      return `<table class="report-table"><thead><tr><th>Date</th><th>Vendor</th><th>Material</th><th>Quantity</th><th>Condition</th><th>Received By</th></tr></thead><tbody>${project.deliveries
+        .map(
+          (d) =>
+            `<tr><td>${d.date}</td><td>${d.vendor}</td><td>${d.material}</td><td>${d.quantity} ${d.unit}</td><td>${d.condition}</td><td>${d.receivedBy}</td></tr>`
+        )
+        .join("")}</tbody></table>`;
+    case "subcontractor_log":
+      if (project.subcontractorLog.length === 0) return `<p>No subcontractor activity recorded.</p>`;
+      return `<table class="report-table"><thead><tr><th>Date</th><th>Contractor</th><th>Trade</th><th>Crew Size</th><th>Scope Today</th><th>Status</th></tr></thead><tbody>${project.subcontractorLog
+        .map(
+          (s) =>
+            `<tr><td>${s.date}</td><td>${s.contractor}</td><td>${s.trade}</td><td>${s.crewSize}</td><td>${s.scopeToday}</td><td>${s.status.replace("_", " ")}</td></tr>`
+        )
+        .join("")}</tbody></table>`;
+    case "cost_forecast": {
+      const totalAllocated = project.budgetBreakdown.reduce((sum, b) => sum + b.allocated, 0);
+      const totalSpent = project.budgetBreakdown.reduce((sum, b) => sum + b.spent, 0);
+      const percentSpent = totalAllocated > 0 ? totalSpent / totalAllocated : 0;
+      const cpi = project.percentComplete > 0 ? project.percentComplete / 100 / percentSpent : 1;
+      const forecastAtCompletion = cpi > 0 ? totalAllocated / cpi : totalAllocated;
+      return `<table class="report-table"><tbody>
+        <tr><th>Budget at Completion</th><td>$${totalAllocated.toLocaleString()}</td><th>Actual Cost to Date</th><td>$${totalSpent.toLocaleString()}</td></tr>
+        <tr><th>Percent Complete</th><td>${project.percentComplete}%</td><th>Cost Performance Index</th><td>${cpi.toFixed(2)}</td></tr>
+        <tr><th>Forecast at Completion</th><td colspan="3">$${Math.round(forecastAtCompletion).toLocaleString()}</td></tr>
+      </tbody></table>
+      <p>${cpi >= 1 ? "The project is currently spending at or under the rate implied by physical progress." : "The project is currently spending ahead of the rate implied by physical progress; cost variance should be monitored closely."}</p>`;
+    }
+    case "change_orders":
+      if (project.changeOrders.length === 0) return `<p>No change orders logged for this project.</p>`;
+      return `<table class="report-table"><thead><tr><th>CO #</th><th>Description</th><th>Date</th><th>Cost Impact</th><th>Schedule Impact</th><th>Status</th></tr></thead><tbody>${project.changeOrders
+        .map(
+          (c) =>
+            `<tr><td>${c.id}</td><td>${c.description}</td><td>${c.date}</td><td>$${c.costImpact.toLocaleString()}</td><td>${c.scheduleImpactDays} day(s)</td><td>${c.status}</td></tr>`
+        )
+        .join("")}</tbody></table>`;
+    case "rfi_log":
+      if (project.rfis.length === 0) return `<p>No RFIs logged for this project.</p>`;
+      return `<table class="report-table"><thead><tr><th>RFI #</th><th>Subject</th><th>Submitted</th><th>Assigned To</th><th>Status</th><th>Response</th></tr></thead><tbody>${project.rfis
+        .map(
+          (r) =>
+            `<tr><td>${r.id}</td><td>${r.subject}</td><td>${r.dateSubmitted}</td><td>${r.assignedTo}</td><td>${r.status}</td><td>${r.response || "Pending response"}</td></tr>`
+        )
+        .join("")}</tbody></table>`;
+    case "submittals":
+      if (project.submittals.length === 0) return `<p>No submittals logged for this project.</p>`;
+      return `<table class="report-table"><thead><tr><th>ID</th><th>Name</th><th>Type</th><th>Submitted</th><th>Due</th><th>Status</th></tr></thead><tbody>${project.submittals
+        .map(
+          (s) =>
+            `<tr><td>${s.id}</td><td>${s.name}</td><td>${s.type}</td><td>${s.submittedDate}</td><td>${s.dueDate}</td><td>${s.status.replace(/_/g, " ")}</td></tr>`
+        )
+        .join("")}</tbody></table>`;
+    case "quality_inspection":
+      if (project.qualityInspections.length === 0) return `<p>No quality inspections recorded for this period.</p>`;
+      return `<table class="report-table"><thead><tr><th>Date</th><th>Area</th><th>Inspector</th><th>Result</th><th>Deficiencies</th></tr></thead><tbody>${project.qualityInspections
+        .map(
+          (q) =>
+            `<tr><td>${q.date}</td><td>${q.area}</td><td>${q.inspector}</td><td>${q.result.replace(/_/g, " ")}</td><td>${q.deficiencies}</td></tr>`
+        )
+        .join("")}</tbody></table>`;
+    case "punch_list":
+      if (project.punchList.length === 0) return `<p>No open punch list items.</p>`;
+      return `<table class="report-table"><thead><tr><th>ID</th><th>Area</th><th>Item</th><th>Trade</th><th>Priority</th><th>Status</th><th>Due</th></tr></thead><tbody>${project.punchList
+        .map(
+          (p) =>
+            `<tr><td>${p.id}</td><td>${p.area}</td><td>${p.item}</td><td>${p.trade}</td><td>${p.priority}</td><td>${p.status.replace("_", " ")}</td><td>${p.dueDate}</td></tr>`
+        )
+        .join("")}</tbody></table>`;
+    case "safety_incidents":
+      if (project.safetyIncidents.length === 0) return `<p>No safety incidents or observations recorded for this period.</p>`;
+      return `<table class="report-table"><thead><tr><th>Date</th><th>Type</th><th>Description</th><th>Severity</th><th>Corrective Action</th><th>Status</th></tr></thead><tbody>${project.safetyIncidents
+        .map(
+          (s) =>
+            `<tr><td>${s.date}</td><td>${s.type.replace(/_/g, " ")}</td><td>${s.description}</td><td>${s.severity}</td><td>${s.correctiveAction}</td><td>${s.status}</td></tr>`
+        )
+        .join("")}</tbody></table>`;
+    case "permits_compliance":
+      if (project.permits.length === 0) return `<p>No permits on file for this project.</p>`;
+      return `<table class="report-table"><thead><tr><th>Permit Type</th><th>Number</th><th>Status</th><th>Last Inspection</th><th>Result</th></tr></thead><tbody>${project.permits
+        .map(
+          (p) =>
+            `<tr><td>${p.type}</td><td>${p.permitNumber}</td><td>${p.status}</td><td>${p.lastInspectionType}${p.lastInspectionDate ? ` (${p.lastInspectionDate})` : ""}</td><td>${p.lastInspectionResult.replace(/_/g, " ")}</td></tr>`
+        )
+        .join("")}</tbody></table>`;
+    case "risk_register":
+      if (project.risks.length === 0) return `<p>No risks currently logged for this project.</p>`;
+      return `<table class="report-table"><thead><tr><th>ID</th><th>Category</th><th>Description</th><th>Likelihood</th><th>Impact</th><th>Mitigation</th><th>Status</th></tr></thead><tbody>${project.risks
+        .map(
+          (r) =>
+            `<tr><td>${r.id}</td><td>${r.category}</td><td>${r.description}</td><td>${r.likelihood}</td><td>${r.impact}</td><td>${r.mitigation}</td><td>${r.status}</td></tr>`
+        )
+        .join("")}</tbody></table>`;
+    case "visitor_log":
+      if (project.visitorLog.length === 0) return `<p>No visitors logged for this reporting period.</p>`;
+      return `<table class="report-table"><thead><tr><th>Date</th><th>Visitor</th><th>Company</th><th>Purpose</th><th>Time In / Out</th><th>Escorted By</th></tr></thead><tbody>${project.visitorLog
+        .map(
+          (v) =>
+            `<tr><td>${v.date}</td><td>${v.visitorName}</td><td>${v.company}</td><td>${v.purpose}</td><td>${v.timeIn} – ${v.timeOut}</td><td>${v.escortedBy}</td></tr>`
+        )
+        .join("")}</tbody></table>`;
     default:
       return `<p>No data available for this section.</p>`;
   }
