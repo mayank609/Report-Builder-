@@ -50,6 +50,7 @@ export function buildTemplatePreviewHtml(values: TemplateFormValues): string {
       })),
       layout: values.layout,
       aiSummary: "",
+      signatures: [],
       createdAt: today,
       updatedAt: today,
     },

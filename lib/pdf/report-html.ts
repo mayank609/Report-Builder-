@@ -19,6 +19,22 @@ function escapeHtml(value: string): string {
     .replace(/"/g, "&quot;");
 }
 
+function buildSignatureBlockHtml(signatures: GeneratedReport["signatures"]): string {
+  return `<div class="signature-grid">${signatures
+    .map(
+      (sig) => `
+      <div class="signature-block">
+        <img src="${sig.imageDataUrl}" alt="${escapeHtml(sig.signerName)} signature" class="signature-image" />
+        <div class="signature-meta">
+          <strong>${escapeHtml(sig.signerName)}</strong>
+          <span>${escapeHtml(sig.role)}</span>
+          <span>Signed ${formatDateTime(sig.signedAt)}</span>
+        </div>
+      </div>`
+    )
+    .join("")}</div>`;
+}
+
 function watermarkDataUri(text: string): string {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="420" height="220">
     <text x="0" y="120" transform="rotate(-28 210 110)" text-anchor="middle" x="210"
@@ -72,13 +88,17 @@ export function buildReportHtmlDocument(ctx: ReportRenderContext): string {
     : "";
 
   const sectionsHtml = sections
-    .map(
-      (section) => `
+    .map((section) => {
+      const bodyHtml =
+        section.type === "signature" && report.signatures.length > 0
+          ? buildSignatureBlockHtml(report.signatures)
+          : section.html;
+      return `
       <section class="report-section">
         <h2>${escapeHtml(section.title)}</h2>
-        <div class="section-body">${section.html}</div>
-      </section>`
-    )
+        <div class="section-body">${bodyHtml}</div>
+      </section>`;
+    })
     .join("\n");
 
   return `<!doctype html>
@@ -136,6 +156,12 @@ export function buildReportHtmlDocument(ctx: ReportRenderContext): string {
   .report-table th { background: #f9fafb; font-weight: 600; }
   .report-chart { margin: 4px 0 16px; break-inside: avoid; }
   .report-chart svg { width: 100%; height: auto; display: block; }
+  .signature-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+  .signature-block { break-inside: avoid; }
+  .signature-image { display: block; max-height: 64px; max-width: 100%; object-fit: contain; object-position: left bottom; }
+  .signature-meta { display: flex; flex-direction: column; gap: 1px; border-top: 1px solid #9ca3af; padding-top: 4px; margin-top: 4px; }
+  .signature-meta strong { font-size: 12.5px; color: ${layout.themeColors.text}; }
+  .signature-meta span { font-size: 10.5px; color: #6b7280; }
 </style>
 </head>
 <body>

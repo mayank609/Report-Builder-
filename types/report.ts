@@ -10,6 +10,14 @@ export interface ReportSectionContent {
   order: number;
 }
 
+export interface ReportSignature {
+  id: string;
+  role: string;
+  signerName: string;
+  imageDataUrl: string;
+  signedAt: string;
+}
+
 export interface ReportGenerationContext {
   builderId: string;
   projectId: string;
@@ -38,6 +46,7 @@ export interface GeneratedReport {
   sections: ReportSectionContent[];
   layout: import("./template").TemplateLayout;
   aiSummary: string;
+  signatures: ReportSignature[];
   createdAt: string;
   updatedAt: string;
 }

@@ -166,6 +166,7 @@ export function ReportGeneratorForm() {
         sections,
         layout: template.layout,
         aiSummary: suggestion.aiSummary,
+        signatures: [],
       };
 
       const report = await reportService.create(reportInput);

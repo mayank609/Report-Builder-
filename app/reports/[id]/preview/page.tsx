@@ -14,6 +14,7 @@ import {
   ArrowLeft,
   FileX,
   Loader2,
+  PenLine,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -30,6 +31,7 @@ import {
 import { useReportRenderContext } from "@/features/reports/hooks/use-report-render-context";
 import { ReportDocumentViewer } from "@/features/reports/components/report-document-viewer";
 import { ReportEditSheet } from "@/features/reports/components/report-edit-sheet";
+import { ReportSignatureDialog } from "@/features/reports/components/report-signature-dialog";
 import { downloadReportPdf } from "@/features/reports/lib/download-report-pdf";
 import { buildReportHtmlDocument } from "@/lib/pdf/report-html";
 import { withChart } from "@/lib/pdf/charts";
@@ -47,6 +49,7 @@ export default function ReportPreviewPage({
   const [zoom, setZoom] = useState(100);
   const [fullscreen, setFullscreen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
+  const [signOpen, setSignOpen] = useState(false);
   const [regenerating, setRegenerating] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -239,6 +242,14 @@ export default function ReportPreviewPage({
           </TooltipTrigger>
           <TooltipContent>Regenerate with AI</TooltipContent>
         </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="icon" onClick={() => setSignOpen(true)}>
+              <PenLine className="size-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Sign report</TooltipContent>
+        </Tooltip>
 
         <div className="ml-auto">
           <Button size="sm" onClick={handleDownload} disabled={downloading}>
@@ -257,6 +268,13 @@ export default function ReportPreviewPage({
         onOpenChange={setEditOpen}
         report={data.report}
         onSaved={refetch}
+      />
+
+      <ReportSignatureDialog
+        open={signOpen}
+        onOpenChange={setSignOpen}
+        report={data.report}
+        onSigned={refetch}
       />
     </div>
   );
