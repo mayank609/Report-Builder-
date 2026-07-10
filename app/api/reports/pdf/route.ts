@@ -1,11 +1,41 @@
 import { NextRequest, NextResponse } from "next/server";
-import puppeteer from "puppeteer";
+import type { Browser } from "puppeteer-core";
+
+export const runtime = "nodejs";
+export const maxDuration = 60;
 
 interface PdfRequestBody {
   html: string;
   orientation?: "portrait" | "landscape";
   pageNumbers?: boolean;
   filename?: string;
+}
+
+/**
+ * Full `puppeteer` bundles its own Chromium (~300MB) — great for local dev,
+ * but too large for Vercel's serverless function bundle. On Vercel we swap
+ * to `puppeteer-core` + `@sparticuz/chromium`, a Chromium build packaged
+ * specifically for serverless/Lambda-style environments.
+ */
+async function launchBrowser(): Promise<Browser> {
+  if (process.env.VERCEL) {
+    const [{ default: chromium }, { default: puppeteerCore }] = await Promise.all([
+      import("@sparticuz/chromium"),
+      import("puppeteer-core"),
+    ]);
+    return puppeteerCore.launch({
+      args: chromium.args,
+      executablePath: await chromium.executablePath(),
+      headless: true,
+    });
+  }
+
+  const { default: puppeteer } = await import("puppeteer");
+  const localBrowser = await puppeteer.launch({
+    headless: true,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  });
+  return localBrowser as unknown as Browser;
 }
 
 export async function POST(request: NextRequest) {
@@ -15,12 +45,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Missing report HTML." }, { status: 400 });
   }
 
-  let browser;
+  let browser: Browser | undefined;
   try {
-    browser = await puppeteer.launch({
-      headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    });
+    browser = await launchBrowser();
     const page = await browser.newPage();
     await page.setContent(body.html, { waitUntil: "load" });
 
