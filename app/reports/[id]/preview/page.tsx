@@ -6,7 +6,6 @@ import {
   ZoomIn,
   ZoomOut,
   Printer,
-  Download,
   Maximize,
   Minimize,
   Pencil,
@@ -32,7 +31,7 @@ import { useReportRenderContext } from "@/features/reports/hooks/use-report-rend
 import { ReportDocumentViewer } from "@/features/reports/components/report-document-viewer";
 import { ReportEditSheet } from "@/features/reports/components/report-edit-sheet";
 import { ReportSignatureDialog } from "@/features/reports/components/report-signature-dialog";
-import { downloadReportPdf } from "@/features/reports/lib/download-report-pdf";
+import { ReportDownloadMenu } from "@/features/reports/components/report-download-menu";
 import { buildReportHtmlDocument } from "@/lib/pdf/report-html";
 import { withChart } from "@/lib/pdf/charts";
 import { generateReportFromContext } from "@/lib/ai/client";
@@ -51,7 +50,6 @@ export default function ReportPreviewPage({
   const [editOpen, setEditOpen] = useState(false);
   const [signOpen, setSignOpen] = useState(false);
   const [regenerating, setRegenerating] = useState(false);
-  const [downloading, setDownloading] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -68,19 +66,6 @@ export default function ReportPreviewPage({
     } else {
       await document.exitFullscreen();
       setFullscreen(false);
-    }
-  };
-
-  const handleDownload = async () => {
-    if (!data) return;
-    setDownloading(true);
-    try {
-      await downloadReportPdf(data.report.id);
-      toast.success("PDF downloaded");
-    } catch {
-      toast.error("Failed to download PDF");
-    } finally {
-      setDownloading(false);
     }
   };
 
@@ -252,10 +237,7 @@ export default function ReportPreviewPage({
         </Tooltip>
 
         <div className="ml-auto">
-          <Button size="sm" onClick={handleDownload} disabled={downloading}>
-            <Download className="size-4" />
-            {downloading ? "Preparing…" : "Download PDF"}
-          </Button>
+          <ReportDownloadMenu reportId={data.report.id} />
         </div>
       </div>
 

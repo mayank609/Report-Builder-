@@ -2,8 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Download, Eye, Trash2, History as HistoryIcon, Search, Sparkles, Loader2 } from "lucide-react";
-import { toast } from "sonner";
+import { Eye, Trash2, History as HistoryIcon, Search, Sparkles } from "lucide-react";
 
 import { PageHeader } from "@/components/shared/page-header";
 import { EmptyState } from "@/components/shared/empty-state";
@@ -15,7 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useReports } from "@/features/reports/hooks/use-reports";
-import { downloadReportPdf } from "@/features/reports/lib/download-report-pdf";
+import { ReportDownloadMenu } from "@/features/reports/components/report-download-menu";
 import { formatDate } from "@/lib/utils";
 import type { GeneratedReport } from "@/types";
 
@@ -30,7 +29,6 @@ export default function ReportHistoryPage() {
   const { reports, loading, error, refetch, remove } = useReports();
   const [search, setSearch] = useState("");
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
-  const [downloadingId, setDownloadingId] = useState<string | null>(null);
 
   const filtered = useMemo(
     () =>
@@ -42,18 +40,6 @@ export default function ReportHistoryPage() {
       ),
     [reports, search]
   );
-
-  const handleDownload = async (report: GeneratedReport) => {
-    setDownloadingId(report.id);
-    try {
-      await downloadReportPdf(report.id);
-      toast.success("PDF downloaded");
-    } catch {
-      toast.error("Failed to download PDF");
-    } finally {
-      setDownloadingId(null);
-    }
-  };
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
@@ -145,19 +131,7 @@ export default function ReportHistoryPage() {
                             <Eye className="size-4" />
                           </Link>
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="size-8"
-                          onClick={() => handleDownload(report)}
-                          disabled={downloadingId === report.id}
-                        >
-                          {downloadingId === report.id ? (
-                            <Loader2 className="size-4 animate-spin" />
-                          ) : (
-                            <Download className="size-4" />
-                          )}
-                        </Button>
+                        <ReportDownloadMenu reportId={report.id} variant="icon" />
                         <Button
                           variant="ghost"
                           size="icon"
