@@ -112,6 +112,13 @@ export function TemplateBuilder({
     setValue("name", suggestion.name, { shouldValidate: true });
     setValue("description", suggestion.description, { shouldValidate: true });
 
+    if (suggestion.extractedTheme) {
+      setValue("layout.themeColors", suggestion.extractedTheme.colors);
+      if (suggestion.extractedTheme.font) {
+        setValue("layout.font", suggestion.extractedTheme.font);
+      }
+    }
+
     if (suggestion.documentKind === "invoice") {
       setValue("invoiceDefaults", {
         ...createBlankInvoiceDefaults(),

@@ -183,10 +183,46 @@ export function TemplateImportDialog({ open, onOpenChange, onApply }: TemplateIm
                     </div>
                   )}
 
+                  {result.extractedTheme ? (
+                    <div>
+                      <p className="mb-1.5 text-xs font-medium text-foreground">
+                        Matched Design
+                      </p>
+                      <div className="flex flex-wrap items-center gap-2 rounded-md border px-2.5 py-2">
+                        <div className="flex -space-x-1.5">
+                          {(
+                            [
+                              result.extractedTheme.colors.primary,
+                              result.extractedTheme.colors.accent,
+                              result.extractedTheme.colors.secondary,
+                            ] as const
+                          ).map((color, i) => (
+                            <span
+                              key={`${color}-${i}`}
+                              className="size-5 rounded-full border-2 border-background"
+                              style={{ background: color }}
+                              title={color}
+                            />
+                          ))}
+                        </div>
+                        <span className="text-xs text-muted-foreground">
+                          {result.extractedTheme.font
+                            ? `Colors + "${result.extractedTheme.font}" font detected`
+                            : "Colors detected from the document"}
+                        </span>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-[11px] text-muted-foreground">
+                      No distinct branding colors detected in this document — the template
+                      keeps its default theme, which you can still customize on the Layout tab.
+                    </p>
+                  )}
+
                   <div className="flex items-start gap-1.5 rounded-md bg-muted/60 p-2.5 text-[11px] text-muted-foreground">
                     <Info className="mt-0.5 size-3 shrink-0" />
-                    Applying will replace the current template details. You can still edit
-                    everything afterwards.
+                    Applying will replace the current template details (including the matched
+                    design, if any). You can still edit everything afterwards.
                   </div>
 
                   <Button onClick={handleApply} className="w-full">

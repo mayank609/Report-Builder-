@@ -1,5 +1,5 @@
 import type { SectionType } from "./section";
-import type { DocumentKind, ReportType } from "./template";
+import type { DocumentKind, ReportType, ThemeColors } from "./template";
 
 export interface AiSectionSuggestion {
   type: SectionType;
@@ -42,4 +42,11 @@ export interface AiTemplateImportSuggestion {
   termsAndConditions?: string;
   notes?: string;
   detectedGstin?: string | null;
+  /**
+   * Colors/font lifted directly from the uploaded document (docx theme XML,
+   * or a dominant-color scan of a rendered PDF page). Null when the source
+   * has no detectable branding (e.g. plain black-on-white text) — the
+   * template's default theme is left untouched in that case.
+   */
+  extractedTheme?: { colors: ThemeColors; font: string | null } | null;
 }

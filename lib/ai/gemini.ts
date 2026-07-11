@@ -170,10 +170,19 @@ function buildFallbackTemplateImportSuggestion(
 
   if (documentKind === "invoice") {
     const gstinMatch = extractedText.toUpperCase().match(GSTIN_SEARCH_REGEX);
+    // Stop at the next labeled field or blank line, not just the next blank
+    // line, so single-line-per-field documents (common PDF/DOCX text
+    // extraction output) don't bleed into the following field.
+    const NEXT_FIELD_LOOKAHEAD = "(?=\\n\\s*(?:notes?|terms(?:\\s*(?:&|and)\\s*conditions)?|payment terms|gstin|bill\\s*to)\\s*[:\\-]|\\n\\n|$)";
     const termsMatch = extractedText.match(
-      /(?:terms(?:\s*(?:&|and)\s*conditions)?|payment terms)\s*[:\-]?\s*([\s\S]{0,300}?)(?:\n\n|$)/i
+      new RegExp(
+        `(?:terms(?:\\s*(?:&|and)\\s*conditions)?|payment terms)\\s*[:\\-]?\\s*([\\s\\S]{0,300}?)${NEXT_FIELD_LOOKAHEAD}`,
+        "i"
+      )
     );
-    const notesMatch = extractedText.match(/(?:notes?)\s*[:\-]?\s*([\s\S]{0,200}?)(?:\n\n|$)/i);
+    const notesMatch = extractedText.match(
+      new RegExp(`(?:notes?)\\s*[:\\-]?\\s*([\\s\\S]{0,200}?)${NEXT_FIELD_LOOKAHEAD}`, "i")
+    );
 
     return {
       documentKind: "invoice",
