@@ -9,6 +9,7 @@ import {
   History,
   Settings,
   HardHat,
+  Receipt,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -18,6 +19,7 @@ const NAV_ITEMS = [
   { href: "/templates", label: "Templates", icon: FileStack },
   { href: "/reports/generate", label: "Generate Report", icon: FilePlus2 },
   { href: "/reports/history", label: "Report History", icon: History },
+  { href: "/invoices", label: "Invoices", icon: Receipt },
   { href: "/settings", label: "Settings", icon: Settings },
 ];
 

@@ -44,6 +44,7 @@ export const templateSectionSchema = z.object({
   visible: z.boolean(),
   collapsed: z.boolean(),
   order: z.number(),
+  width: z.enum(["full", "half"]),
 });
 
 export const themeColorsSchema = z.object({
@@ -66,7 +67,14 @@ export const templateLayoutSchema = z.object({
   themeColors: themeColorsSchema,
 });
 
-export const templateFormSchema = z.object({
+export const invoiceTemplateDefaultsSchema = z.object({
+  termsAndConditions: z.string(),
+  notes: z.string(),
+  numberingPrefix: z.string(),
+  defaultGstBranchId: z.string().nullable(),
+});
+
+export const templateFormSchemaBase = z.object({
   name: z.string().min(3, "Template name must be at least 3 characters"),
   reportType: z.enum([
     "daily_progress",
@@ -81,8 +89,21 @@ export const templateFormSchema = z.object({
   ]),
   description: z.string().max(500, "Keep the description under 500 characters"),
   status: z.enum(["draft", "published"]),
+  documentKind: z.enum(["report", "invoice"]),
+  origin: z.enum(["manual", "ai", "imported"]),
+  invoiceDefaults: invoiceTemplateDefaultsSchema.nullable(),
   layout: templateLayoutSchema,
-  sections: z.array(templateSectionSchema).min(1, "Add at least one section"),
+  sections: z.array(templateSectionSchema),
 });
 
-export type TemplateFormValues = z.infer<typeof templateFormSchema>;
+export const templateFormSchema = templateFormSchemaBase.superRefine((values, ctx) => {
+  if (values.documentKind === "report" && values.sections.length === 0) {
+    ctx.addIssue({
+      code: "custom",
+      message: "Add at least one section",
+      path: ["sections"],
+    });
+  }
+});
+
+export type TemplateFormValues = z.infer<typeof templateFormSchemaBase>;

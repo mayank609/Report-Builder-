@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { MoreVertical, Copy, Trash2, Pencil, FileStack, Sparkles } from "lucide-react";
+import { MoreVertical, Copy, Trash2, Pencil, FileStack, Sparkles, Receipt, FileUp } from "lucide-react";
 
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -27,7 +27,11 @@ export function TemplateCard({ template, onDelete, onDuplicate }: TemplateCardPr
       <CardHeader className="px-5">
         <div className="flex items-start justify-between gap-2">
           <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
-            <FileStack className="size-4.5" />
+            {template.documentKind === "invoice" ? (
+              <Receipt className="size-4.5" />
+            ) : (
+              <FileStack className="size-4.5" />
+            )}
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -68,8 +72,15 @@ export function TemplateCard({ template, onDelete, onDuplicate }: TemplateCardPr
           <Badge variant={template.status === "published" ? "success" : "secondary"} className="capitalize">
             {template.status}
           </Badge>
-          <Badge variant="outline">{titleCase(template.reportType)}</Badge>
-          {template.aiGenerated && (
+          <Badge variant="outline" className="capitalize">
+            {template.documentKind === "invoice" ? "Invoice" : titleCase(template.reportType)}
+          </Badge>
+          {template.origin === "imported" && (
+            <Badge variant="outline" className="gap-1 text-primary border-primary/30">
+              <FileUp className="size-3" /> Imported
+            </Badge>
+          )}
+          {template.origin === "ai" && (
             <Badge variant="outline" className="gap-1 text-primary border-primary/30">
               <Sparkles className="size-3" /> AI
             </Badge>
@@ -77,7 +88,11 @@ export function TemplateCard({ template, onDelete, onDuplicate }: TemplateCardPr
         </div>
       </CardContent>
       <CardFooter className="px-5 text-xs text-muted-foreground">
-        <span>{template.sections.length} sections</span>
+        <span>
+          {template.documentKind === "invoice"
+            ? "Invoice template"
+            : `${template.sections.length} sections`}
+        </span>
         <span className="mx-1.5">·</span>
         <span>Updated {formatDate(template.updatedAt)}</span>
       </CardFooter>

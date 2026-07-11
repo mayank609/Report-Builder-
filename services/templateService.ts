@@ -5,6 +5,19 @@ import seedTemplatesData from "@/mock-data/templates.json";
 
 const seedTemplates = seedTemplatesData as ReportTemplate[];
 
+function normalizeTemplate(template: ReportTemplate): ReportTemplate {
+  return {
+    ...template,
+    documentKind: template.documentKind ?? "report",
+    origin: template.origin ?? (template.aiGenerated ? "ai" : "manual"),
+    invoiceDefaults: template.invoiceDefaults ?? null,
+    sections: template.sections.map((section) => ({
+      ...section,
+      width: section.width ?? "full",
+    })),
+  };
+}
+
 function readCustomTemplates(): ReportTemplate[] {
   return storage.get<ReportTemplate[]>(STORAGE_KEYS.templates, []);
 }
@@ -24,7 +37,7 @@ function mergeTemplates(): ReportTemplate[] {
   const seeds = seedTemplates.filter(
     (t) => !customIds.has(t.id) && !deletedSeedIds.has(t.id)
   );
-  return [...custom, ...seeds];
+  return [...custom, ...seeds].map(normalizeTemplate);
 }
 
 export const templateService = {
@@ -95,6 +108,9 @@ export const templateService = {
       reportType: existing.reportType,
       description: existing.description,
       status: "draft",
+      documentKind: existing.documentKind,
+      origin: existing.origin,
+      invoiceDefaults: existing.invoiceDefaults,
       layout: existing.layout,
       sections: existing.sections,
       createdBy: existing.createdBy,

@@ -1,0 +1,238 @@
+[
+  {
+    "id": "inv-001",
+    "invoiceNumber": "INV-000001",
+    "docType": "tax_invoice",
+    "status": "overdue",
+    "templateId": null,
+    "templateName": null,
+    "builderId": "bld-001",
+    "gstBranchId": "gst-001-mh",
+    "projectId": "prj-001",
+    "projectName": "Pacific Heights Residence",
+    "billTo": {
+      "clientId": "cli-001",
+      "name": "Jonathan Pierce",
+      "companyName": "Pierce Family Trust",
+      "address": "1180 Pacific Heights Blvd",
+      "gstin": "",
+      "state": ""
+    },
+    "issueDate": "2026-05-01",
+    "dueDate": "2026-05-31",
+    "currency": "INR",
+    "lineItems": [
+      {
+        "id": "li-001-1",
+        "description": "Structural steel supply – Phase 1",
+        "hsnSac": "9954",
+        "quantity": 1,
+        "unit": "lot",
+        "rate": 850000,
+        "discountPercent": 0,
+        "taxRatePercent": 18
+      },
+      {
+        "id": "li-001-2",
+        "description": "Site supervision charges – March 2026",
+        "hsnSac": "9983",
+        "quantity": 1,
+        "unit": "lot",
+        "rate": 150000,
+        "discountPercent": 5,
+        "taxRatePercent": 18
+      }
+    ],
+    "notes": "Thank you for your business.",
+    "termsAndConditions": "Payment due within 30 days of invoice date. Late payments may attract interest at 1.5% per month.",
+    "totals": {
+      "subtotal": 1000000,
+      "totalDiscount": 7500,
+      "taxableValue": 992500,
+      "totalCgst": 89325,
+      "totalSgst": 89325,
+      "totalIgst": 0,
+      "totalTax": 178650,
+      "grandTotal": 1171150,
+      "taxBreakup": [
+        { "taxRatePercent": 18, "taxableValue": 992500, "cgst": 89325, "sgst": 89325, "igst": 0 }
+      ],
+      "isInterState": false
+    },
+    "amountPaid": 0,
+    "createdAt": "2026-05-01T09:00:00.000Z",
+    "updatedAt": "2026-05-01T09:00:00.000Z"
+  },
+  {
+    "id": "inv-002",
+    "invoiceNumber": "INV-000002",
+    "docType": "tax_invoice",
+    "status": "paid",
+    "templateId": null,
+    "templateName": null,
+    "builderId": "bld-001",
+    "gstBranchId": "gst-001-ka",
+    "projectId": "prj-004",
+    "projectName": "Okafor Logistics Warehouse",
+    "billTo": {
+      "clientId": "cli-004",
+      "name": "Samuel Okafor",
+      "companyName": "Okafor Holdings",
+      "address": "88 Embarcadero Center",
+      "gstin": "",
+      "state": "Karnataka"
+    },
+    "issueDate": "2026-04-10",
+    "dueDate": "2026-05-10",
+    "currency": "INR",
+    "lineItems": [
+      {
+        "id": "li-002-1",
+        "description": "Warehouse foundation works",
+        "hsnSac": "9954",
+        "quantity": 1,
+        "unit": "lot",
+        "rate": 620000,
+        "discountPercent": 0,
+        "taxRatePercent": 18
+      },
+      {
+        "id": "li-002-2",
+        "description": "Equipment rental – excavators",
+        "hsnSac": "9973",
+        "quantity": 2,
+        "unit": "month",
+        "rate": 45000,
+        "discountPercent": 0,
+        "taxRatePercent": 18
+      }
+    ],
+    "notes": "Thank you for your business.",
+    "termsAndConditions": "Payment due within 30 days of invoice date. Late payments may attract interest at 1.5% per month.",
+    "totals": {
+      "subtotal": 710000,
+      "totalDiscount": 0,
+      "taxableValue": 710000,
+      "totalCgst": 63900,
+      "totalSgst": 63900,
+      "totalIgst": 0,
+      "totalTax": 127800,
+      "grandTotal": 837800,
+      "taxBreakup": [
+        { "taxRatePercent": 18, "taxableValue": 710000, "cgst": 63900, "sgst": 63900, "igst": 0 }
+      ],
+      "isInterState": false
+    },
+    "amountPaid": 837800,
+    "createdAt": "2026-04-10T09:00:00.000Z",
+    "updatedAt": "2026-04-18T11:30:00.000Z"
+  },
+  {
+    "id": "inv-003",
+    "invoiceNumber": "INV-000003",
+    "docType": "proforma_invoice",
+    "status": "draft",
+    "templateId": null,
+    "templateName": null,
+    "builderId": "bld-001",
+    "gstBranchId": "gst-001-mh",
+    "projectId": null,
+    "projectName": null,
+    "billTo": {
+      "clientId": "cli-003",
+      "name": "Dept. of Public Works",
+      "companyName": "City of Austin",
+      "address": "301 W 2nd Street",
+      "gstin": "33LMNOQ4321P1Z6",
+      "state": "Tamil Nadu"
+    },
+    "issueDate": "2026-07-08",
+    "dueDate": "2026-08-07",
+    "currency": "INR",
+    "lineItems": [
+      {
+        "id": "li-003-1",
+        "description": "Design consultancy – municipal complex",
+        "hsnSac": "9983",
+        "quantity": 1,
+        "unit": "lot",
+        "rate": 300000,
+        "discountPercent": 0,
+        "taxRatePercent": 18
+      }
+    ],
+    "notes": "Draft for internal review before issuing as a tax invoice.",
+    "termsAndConditions": "Payment due within 30 days of invoice date. Late payments may attract interest at 1.5% per month.",
+    "totals": {
+      "subtotal": 300000,
+      "totalDiscount": 0,
+      "taxableValue": 300000,
+      "totalCgst": 0,
+      "totalSgst": 0,
+      "totalIgst": 54000,
+      "totalTax": 54000,
+      "grandTotal": 354000,
+      "taxBreakup": [
+        { "taxRatePercent": 18, "taxableValue": 300000, "cgst": 0, "sgst": 0, "igst": 54000 }
+      ],
+      "isInterState": true
+    },
+    "amountPaid": 0,
+    "createdAt": "2026-07-08T09:00:00.000Z",
+    "updatedAt": "2026-07-08T09:00:00.000Z"
+  },
+  {
+    "id": "inv-004",
+    "invoiceNumber": "INV-000004",
+    "docType": "tax_invoice",
+    "status": "sent",
+    "templateId": null,
+    "templateName": null,
+    "builderId": "bld-003",
+    "gstBranchId": null,
+    "projectId": "prj-003",
+    "projectName": "South Austin Municipal Complex",
+    "billTo": {
+      "clientId": "cli-003",
+      "name": "Dept. of Public Works",
+      "companyName": "City of Austin",
+      "address": "301 W 2nd Street",
+      "gstin": "33LMNOQ4321P1Z6",
+      "state": "Tamil Nadu"
+    },
+    "issueDate": "2026-07-01",
+    "dueDate": "2026-07-31",
+    "currency": "INR",
+    "lineItems": [
+      {
+        "id": "li-004-1",
+        "description": "Municipal complex inspection report retainer",
+        "hsnSac": "9983",
+        "quantity": 1,
+        "unit": "lot",
+        "rate": 120000,
+        "discountPercent": 0,
+        "taxRatePercent": 12
+      }
+    ],
+    "notes": "Thank you for your business.",
+    "termsAndConditions": "Payment due within 30 days of invoice date.",
+    "totals": {
+      "subtotal": 120000,
+      "totalDiscount": 0,
+      "taxableValue": 120000,
+      "totalCgst": 7200,
+      "totalSgst": 7200,
+      "totalIgst": 0,
+      "totalTax": 14400,
+      "grandTotal": 134400,
+      "taxBreakup": [
+        { "taxRatePercent": 12, "taxableValue": 120000, "cgst": 7200, "sgst": 7200, "igst": 0 }
+      ],
+      "isInterState": false
+    },
+    "amountPaid": 0,
+    "createdAt": "2026-07-01T09:00:00.000Z",
+    "updatedAt": "2026-07-01T09:00:00.000Z"
+  }
+]

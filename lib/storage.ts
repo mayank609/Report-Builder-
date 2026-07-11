@@ -53,5 +53,10 @@ export const STORAGE_KEYS = {
   deletedSeedTemplateIds: "rb:templates:deleted-seed-ids",
   reports: "rb:reports",
   deletedSeedReportIds: "rb:reports:deleted-seed-ids",
+  invoices: "rb:invoices",
+  deletedSeedInvoiceIds: "rb:invoices:deleted-seed-ids",
+  builderOverrides: "rb:builders:overrides",
+  clientOverrides: "rb:clients:overrides",
+  docCounters: "rb:doc-counters",
   settings: "rb:settings",
 } as const;

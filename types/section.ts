@@ -39,6 +39,8 @@ export interface SectionCatalogEntry {
   defaultTitle: string;
 }
 
+export type SectionWidth = "full" | "half";
+
 export interface TemplateSection {
   id: string;
   type: SectionType;
@@ -49,4 +51,5 @@ export interface TemplateSection {
   visible: boolean;
   collapsed: boolean;
   order: number;
+  width: SectionWidth;
 }

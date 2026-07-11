@@ -12,7 +12,7 @@ import {
 import {
   SortableContext,
   sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
+  rectSortingStrategy,
   arrayMove,
 } from "@dnd-kit/sortable";
 import { Layers } from "lucide-react";
@@ -24,6 +24,7 @@ import { SectionCatalog } from "@/features/templates/components/section-catalog"
 import { SortableSectionItem } from "@/features/templates/components/sortable-section-item";
 import { createSectionInstance } from "@/features/templates/lib/default-template";
 import { SECTION_CATALOG } from "@/lib/constants";
+import { cn } from "@/lib/utils";
 import type { SectionType, TemplateSection } from "@/types";
 
 interface SectionBuilderProps {
@@ -95,28 +96,35 @@ export function SectionBuilder({ sections, onSectionsChange }: SectionBuilderPro
             description="Click sections from the catalog on the left to add them to your template."
           />
         ) : (
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-          >
-            <SortableContext
-              items={sortedSections.map((s) => s.id)}
-              strategy={verticalListSortingStrategy}
+          <>
+            <p className="mb-2.5 text-xs text-muted-foreground">
+              Drag up/down to reorder, or drag left/right to place two half-width sections
+              side-by-side in the final report.
+            </p>
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
             >
-              <div className="space-y-2.5">
-                {sortedSections.map((section, index) => (
-                  <SortableSectionItem
-                    key={section.id}
-                    section={section}
-                    index={index}
-                    onChange={handleChange}
-                    onRemove={handleRemove}
-                  />
-                ))}
-              </div>
-            </SortableContext>
-          </DndContext>
+              <SortableContext
+                items={sortedSections.map((s) => s.id)}
+                strategy={rectSortingStrategy}
+              >
+                <div className="grid grid-cols-1 items-start gap-2.5 sm:grid-cols-2">
+                  {sortedSections.map((section, index) => (
+                    <SortableSectionItem
+                      key={section.id}
+                      section={section}
+                      index={index}
+                      onChange={handleChange}
+                      onRemove={handleRemove}
+                      className={cn(section.width !== "half" && "sm:col-span-2")}
+                    />
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
+          </>
         )}
       </div>
     </div>

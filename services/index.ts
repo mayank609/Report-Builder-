@@ -3,6 +3,8 @@ export * from "./builderService";
 export * from "./clientService";
 export * from "./contractorService";
 export * from "./engineerService";
+export * from "./invoiceService";
+export * from "./numberingService";
 export * from "./projectService";
 export * from "./reportService";
 export * from "./settingsService";

@@ -15,7 +15,9 @@
     "email": "rachel.kim@horizonrep.com",
     "phone": "+1 (212) 555-0678",
     "address": "500 Fifth Avenue, Suite 2200",
-    "clientType": "corporate"
+    "clientType": "corporate",
+    "gstin": "27PQRSX5678L1Z2",
+    "billingState": "Maharashtra"
   },
   {
     "id": "cli-003",
@@ -24,7 +26,9 @@
     "email": "publicworks@austintexas.gov",
     "phone": "+1 (512) 555-0789",
     "address": "301 W 2nd Street",
-    "clientType": "government"
+    "clientType": "government",
+    "gstin": "33LMNOQ4321P1Z6",
+    "billingState": "Tamil Nadu"
   },
   {
     "id": "cli-004",
@@ -33,6 +37,7 @@
     "email": "samuel.okafor@okaforholdings.com",
     "phone": "+1 (415) 555-0834",
     "address": "88 Embarcadero Center",
-    "clientType": "corporate"
+    "clientType": "corporate",
+    "billingState": "Karnataka"
   }
 ]

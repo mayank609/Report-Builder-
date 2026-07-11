@@ -9,6 +9,8 @@ import {
   Lock,
   Eye,
   EyeOff,
+  RectangleHorizontal,
+  Columns2,
 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
@@ -16,6 +18,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { SECTION_ICONS } from "@/features/templates/lib/section-icons";
 import type { TemplateSection } from "@/types";
@@ -25,6 +28,7 @@ interface SortableSectionItemProps {
   index: number;
   onChange: (id: string, patch: Partial<TemplateSection>) => void;
   onRemove: (id: string) => void;
+  className?: string;
 }
 
 export function SortableSectionItem({
@@ -32,6 +36,7 @@ export function SortableSectionItem({
   index,
   onChange,
   onRemove,
+  className,
 }: SortableSectionItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: section.id });
@@ -49,14 +54,15 @@ export function SortableSectionItem({
       style={style}
       className={cn(
         "rounded-lg border bg-card shadow-xs",
-        isDragging && "z-10 opacity-90 shadow-lg"
+        isDragging && "z-10 opacity-90 shadow-lg",
+        className
       )}
     >
       <div className="flex items-center gap-2 px-3 py-2.5">
         <button
           type="button"
           className="cursor-grab touch-none text-muted-foreground hover:text-foreground active:cursor-grabbing"
-          aria-label="Drag to reorder"
+          aria-label="Drag to reorder — drop left/right to place side-by-side, up/down to reorder"
           {...attributes}
           {...listeners}
         >
@@ -70,6 +76,30 @@ export function SortableSectionItem({
             {index + 1}. {section.title}
           </p>
         </div>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="size-7"
+              onClick={() =>
+                onChange(section.id, { width: section.width === "half" ? "full" : "half" })
+              }
+            >
+              {section.width === "half" ? (
+                <Columns2 className="size-4 text-primary" />
+              ) : (
+                <RectangleHorizontal className="size-4" />
+              )}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            {section.width === "half"
+              ? "Half width — sits side-by-side with a neighboring half-width section"
+              : "Full width — click to make half width"}
+          </TooltipContent>
+        </Tooltip>
         {section.required && (
           <Badge variant="outline" className="gap-1 text-[10px]">
             <Lock className="size-2.5" /> Required

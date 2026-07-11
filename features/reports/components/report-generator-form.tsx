@@ -31,7 +31,7 @@ import { generateReportFromContext } from "@/lib/ai/client";
 import { withChart } from "@/lib/pdf/charts";
 import { reportService, templateService } from "@/services";
 import { formatDate } from "@/lib/utils";
-import type { GeneratedReport, ReportSectionContent } from "@/types";
+import type { ReportInput, ReportSectionContent } from "@/types";
 
 export function ReportGeneratorForm() {
   const router = useRouter();
@@ -138,10 +138,11 @@ export function ReportGeneratorForm() {
           title: section.title,
           html: withChart(section.type, html, project),
           order: section.order,
+          width: section.width,
         };
       });
 
-      const reportInput: Omit<GeneratedReport, "id" | "createdAt" | "updatedAt"> = {
+      const reportInput: ReportInput = {
         name: `${project.name} - ${template.name} - ${formatDate(values.dateRangeEnd)}`,
         templateId: template.id,
         templateName: template.name,

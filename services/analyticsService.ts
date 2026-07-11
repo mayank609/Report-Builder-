@@ -1,6 +1,7 @@
 import { templateService } from "./templateService";
 import { reportService } from "./reportService";
-import type { GeneratedReport, ReportTemplate } from "@/types";
+import { invoiceService } from "./invoiceService";
+import type { GeneratedReport, Invoice, ReportTemplate } from "@/types";
 
 export interface DashboardAnalytics {
   totalTemplates: number;
@@ -11,13 +12,18 @@ export interface DashboardAnalytics {
   recentReports: GeneratedReport[];
   topTemplates: ReportTemplate[];
   reportsByType: { type: string; count: number }[];
+  totalInvoices: number;
+  outstandingInvoiceAmount: number;
+  overdueInvoiceCount: number;
+  recentInvoices: Invoice[];
 }
 
 export const analyticsService = {
   async getDashboardAnalytics(): Promise<DashboardAnalytics> {
-    const [templates, reports] = await Promise.all([
+    const [templates, reports, invoiceStats] = await Promise.all([
       templateService.list(),
       reportService.list(),
+      invoiceService.stats(),
     ]);
 
     const now = new Date();
@@ -46,6 +52,10 @@ export const analyticsService = {
         type,
         count,
       })),
+      totalInvoices: invoiceStats.total,
+      outstandingInvoiceAmount: invoiceStats.outstanding,
+      overdueInvoiceCount: invoiceStats.overdueCount,
+      recentInvoices: invoiceStats.recent,
     };
   },
 };

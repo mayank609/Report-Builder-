@@ -20,6 +20,7 @@ export function buildTemplatePreviewHtml(values: TemplateFormValues): string {
   const ctx: ReportRenderContext = {
     report: {
       id: "preview",
+      reportNumber: "PREVIEW",
       name: values.name || "Untitled Report Template",
       templateId: "preview",
       templateName: values.name || "Untitled Template",
@@ -47,6 +48,7 @@ export function buildTemplatePreviewHtml(values: TemplateFormValues): string {
         title: s.title,
         html: withChart(s.type, getSampleSectionHtml(s.type), SAMPLE_PROJECT),
         order: s.order,
+        width: s.width,
       })),
       layout: values.layout,
       aiSummary: "",

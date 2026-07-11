@@ -3,7 +3,8 @@ import { DEFAULT_SETTINGS, type AppSettings } from "@/types";
 
 export const settingsService = {
   async get(): Promise<AppSettings> {
-    return storage.get<AppSettings>(STORAGE_KEYS.settings, DEFAULT_SETTINGS);
+    const stored = storage.get<AppSettings>(STORAGE_KEYS.settings, DEFAULT_SETTINGS);
+    return { ...DEFAULT_SETTINGS, ...stored };
   },
 
   async update(partial: Partial<AppSettings>): Promise<AppSettings> {

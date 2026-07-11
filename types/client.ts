@@ -6,4 +6,6 @@ export interface Client {
   phone: string;
   address: string;
   clientType: "individual" | "corporate" | "government";
+  gstin?: string;
+  billingState?: string;
 }

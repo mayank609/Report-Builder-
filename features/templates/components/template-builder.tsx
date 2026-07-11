@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Sparkles, Save, CheckCircle2, ArrowLeft, Eye } from "lucide-react";
+import { Sparkles, Save, CheckCircle2, ArrowLeft, Eye, FileUp } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
 
@@ -23,14 +23,20 @@ import { TemplateDetailsForm } from "@/features/templates/components/template-de
 import { LayoutOptionsPanel } from "@/features/templates/components/layout-options-panel";
 import { SectionBuilder } from "@/features/templates/components/section-builder";
 import { AiGeneratorPanel } from "@/features/templates/components/ai-generator-panel";
+import { InvoiceDefaultsPanel } from "@/features/templates/components/invoice-defaults-panel";
+import { TemplateImportDialog } from "@/features/templates/components/template-import-dialog";
 import { TemplatePreviewPanel } from "@/features/templates/components/template-preview-panel";
-import { createBlankTemplate, createSectionInstance } from "@/features/templates/lib/default-template";
+import {
+  createBlankInvoiceDefaults,
+  createBlankTemplate,
+  createSectionInstance,
+} from "@/features/templates/lib/default-template";
 import {
   templateFormSchema,
   type TemplateFormValues,
 } from "@/features/templates/lib/template-schema";
 import { SECTION_CATALOG } from "@/lib/constants";
-import type { AiTemplateSuggestion, ReportTemplate } from "@/types";
+import type { AiTemplateImportSuggestion, AiTemplateSuggestion, ReportTemplate } from "@/types";
 
 interface TemplateBuilderProps {
   mode: "create" | "edit";
@@ -47,9 +53,13 @@ export function TemplateBuilder({
 }: TemplateBuilderProps) {
   const router = useRouter();
   const [aiPanelOpen, setAiPanelOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [aiGenerated, setAiGenerated] = useState(initialAiGenerated);
+  const [origin, setOrigin] = useState<TemplateFormValues["origin"]>(
+    initialValues?.origin ?? "manual"
+  );
 
   const {
     control,
@@ -64,15 +74,57 @@ export function TemplateBuilder({
 
   const watchedValues = watch();
   const sections = watchedValues.sections;
+  const documentKind = watchedValues.documentKind;
+
+  const handleDocumentKindChange = (kind: TemplateFormValues["documentKind"]) => {
+    setValue("documentKind", kind, { shouldValidate: true });
+    if (kind === "invoice" && !watchedValues.invoiceDefaults) {
+      setValue("invoiceDefaults", createBlankInvoiceDefaults());
+    }
+  };
 
   const handleAiApply = (suggestion: AiTemplateSuggestion) => {
     setAiGenerated(true);
+    setOrigin("ai");
+    setValue("documentKind", "report", { shouldValidate: true });
     setValue("name", suggestion.name, { shouldValidate: true });
     setValue("reportType", suggestion.reportType);
     setValue("description", suggestion.description, { shouldValidate: true });
     setValue(
       "sections",
       suggestion.sections.map((s, index) => {
+        const catalogEntry = SECTION_CATALOG.find((c) => c.type === s.type);
+        return createSectionInstance(
+          s.type,
+          s.title || catalogEntry?.defaultTitle || s.type,
+          s.description || catalogEntry?.description || "",
+          index
+        );
+      }),
+      { shouldValidate: true }
+    );
+  };
+
+  const handleImportApply = (suggestion: AiTemplateImportSuggestion) => {
+    setAiGenerated(suggestion.source === "gemini");
+    setOrigin("imported");
+    setValue("documentKind", suggestion.documentKind, { shouldValidate: true });
+    setValue("name", suggestion.name, { shouldValidate: true });
+    setValue("description", suggestion.description, { shouldValidate: true });
+
+    if (suggestion.documentKind === "invoice") {
+      setValue("invoiceDefaults", {
+        ...createBlankInvoiceDefaults(),
+        termsAndConditions: suggestion.termsAndConditions || "",
+        notes: suggestion.notes || "",
+      });
+      return;
+    }
+
+    setValue("reportType", suggestion.reportType || "custom");
+    setValue(
+      "sections",
+      (suggestion.sections ?? []).map((s, index) => {
         const catalogEntry = SECTION_CATALOG.find((c) => c.type === s.type);
         return createSectionInstance(
           s.type,
@@ -93,8 +145,11 @@ export function TemplateBuilder({
         reportType: values.reportType,
         description: values.description,
         status,
+        documentKind: values.documentKind,
+        origin,
+        invoiceDefaults: values.documentKind === "invoice" ? values.invoiceDefaults : null,
         layout: values.layout,
-        sections: values.sections,
+        sections: values.documentKind === "report" ? values.sections : [],
         createdBy: "You",
         aiGenerated,
       };
@@ -145,6 +200,9 @@ export function TemplateBuilder({
           <Button variant="outline" className="lg:hidden" onClick={() => setPreviewOpen(true)}>
             <Eye className="size-4" /> Preview
           </Button>
+          <Button variant="outline" onClick={() => setImportOpen(true)}>
+            <FileUp className="size-4" /> Import Template
+          </Button>
           <Button variant="outline" onClick={() => setAiPanelOpen(true)}>
             <Sparkles className="size-4 text-primary" /> Generate with AI
           </Button>
@@ -157,24 +215,39 @@ export function TemplateBuilder({
             <TabsList>
               <TabsTrigger value="details">Details</TabsTrigger>
               <TabsTrigger value="layout">Layout</TabsTrigger>
-              <TabsTrigger value="sections">
-                Sections{sections.length > 0 ? ` (${sections.length})` : ""}
-              </TabsTrigger>
+              {documentKind === "report" ? (
+                <TabsTrigger value="sections">
+                  Sections{sections.length > 0 ? ` (${sections.length})` : ""}
+                </TabsTrigger>
+              ) : (
+                <TabsTrigger value="sections">Invoice Defaults</TabsTrigger>
+              )}
             </TabsList>
             <TabsContent value="details" className="mt-4">
-              <TemplateDetailsForm control={control} errors={errors} />
+              <TemplateDetailsForm
+                control={control}
+                errors={errors}
+                documentKind={documentKind}
+                onDocumentKindChange={handleDocumentKindChange}
+              />
             </TabsContent>
             <TabsContent value="layout" className="mt-4">
               <LayoutOptionsPanel control={control} />
             </TabsContent>
             <TabsContent value="sections" className="mt-4">
-              {errors.sections && (
-                <p className="mb-3 text-xs text-destructive">{errors.sections.message}</p>
+              {documentKind === "report" ? (
+                <>
+                  {errors.sections && (
+                    <p className="mb-3 text-xs text-destructive">{errors.sections.message}</p>
+                  )}
+                  <SectionBuilder
+                    sections={sections}
+                    onSectionsChange={(next) => setValue("sections", next, { shouldValidate: true })}
+                  />
+                </>
+              ) : (
+                <InvoiceDefaultsPanel control={control} />
               )}
-              <SectionBuilder
-                sections={sections}
-                onSectionsChange={(next) => setValue("sections", next, { shouldValidate: true })}
-              />
             </TabsContent>
           </Tabs>
         </div>
@@ -201,6 +274,12 @@ export function TemplateBuilder({
         open={aiPanelOpen}
         onOpenChange={setAiPanelOpen}
         onApply={handleAiApply}
+      />
+
+      <TemplateImportDialog
+        open={importOpen}
+        onOpenChange={setImportOpen}
+        onApply={handleImportApply}
       />
 
       <Sheet open={previewOpen} onOpenChange={setPreviewOpen}>

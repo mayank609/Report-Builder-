@@ -1,10 +1,17 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 import { SECTION_CATALOG } from "@/lib/constants";
-import { buildReportGenerationPrompt, buildTemplateGenerationPrompt } from "./prompts";
+import { GSTIN_REGEX } from "@/lib/gst/india-states";
+import {
+  buildReportGenerationPrompt,
+  buildTemplateGenerationPrompt,
+  buildTemplateImportPrompt,
+} from "./prompts";
 import type {
   AiReportSuggestion,
+  AiTemplateImportSuggestion,
   AiTemplateSuggestion,
+  DocumentKind,
   Project,
   ReportTemplate,
   SectionType,
@@ -103,6 +110,96 @@ export async function generateReportSuggestion(params: {
   }
 
   return buildFallbackReportSuggestion(rest);
+}
+
+export async function generateTemplateImportSuggestion(
+  extractedText: string,
+  documentKind: DocumentKind,
+  apiKey: string | null
+): Promise<AiTemplateImportSuggestion> {
+  if (apiKey && extractedText.trim().length > 0) {
+    try {
+      const raw = (await callGemini(
+        apiKey,
+        buildTemplateImportPrompt(extractedText, documentKind)
+      )) as Partial<AiTemplateImportSuggestion>;
+
+      if (documentKind === "invoice" && raw.name) {
+        return {
+          documentKind: "invoice",
+          name: raw.name,
+          description: raw.description || "",
+          formattingNotes: raw.formattingNotes || "",
+          termsAndConditions: raw.termsAndConditions || "",
+          notes: raw.notes || "",
+          detectedGstin: raw.detectedGstin ?? null,
+          source: "gemini",
+        };
+      }
+
+      const sections = (raw.sections ?? [])
+        .filter((s) => VALID_SECTION_TYPES.has(s.type))
+        .map((s) => ({ type: s.type, title: s.title || s.type, description: s.description || "" }));
+
+      if (documentKind === "report" && sections.length > 0 && raw.name) {
+        return {
+          documentKind: "report",
+          name: raw.name,
+          description: raw.description || "",
+          formattingNotes: raw.formattingNotes || "",
+          reportType: raw.reportType || "custom",
+          sections,
+          source: "gemini",
+        };
+      }
+    } catch {
+      // fall through to local fallback generator below
+    }
+  }
+
+  return buildFallbackTemplateImportSuggestion(extractedText, documentKind);
+}
+
+const GSTIN_SEARCH_REGEX = new RegExp(GSTIN_REGEX.source.replace(/^\^|\$$/g, ""));
+
+function buildFallbackTemplateImportSuggestion(
+  extractedText: string,
+  documentKind: DocumentKind
+): AiTemplateImportSuggestion {
+  const fileLabel = extractedText.trim().length > 0 ? "the uploaded document" : "an uploaded document";
+
+  if (documentKind === "invoice") {
+    const gstinMatch = extractedText.toUpperCase().match(GSTIN_SEARCH_REGEX);
+    const termsMatch = extractedText.match(
+      /(?:terms(?:\s*(?:&|and)\s*conditions)?|payment terms)\s*[:\-]?\s*([\s\S]{0,300}?)(?:\n\n|$)/i
+    );
+    const notesMatch = extractedText.match(/(?:notes?)\s*[:\-]?\s*([\s\S]{0,200}?)(?:\n\n|$)/i);
+
+    return {
+      documentKind: "invoice",
+      name: "Imported Invoice Template",
+      description: `Auto-drafted from ${fileLabel}. Review and adjust before publishing.`,
+      formattingNotes:
+        "Use a clean sans-serif font, a single accent color for headers, and a clear line-items table with tax columns.",
+      termsAndConditions:
+        termsMatch?.[1]?.trim() ||
+        "Payment due within 30 days of invoice date. Late payments may attract interest at 1.5% per month.",
+      notes: notesMatch?.[1]?.trim() || "Thank you for your business.",
+      detectedGstin: gstinMatch?.[0] ?? null,
+      source: "fallback",
+    };
+  }
+
+  const suggestion = buildFallbackTemplateSuggestion(extractedText || "Imported report template");
+  return {
+    documentKind: "report",
+    name: "Imported Report Template",
+    description: `Auto-drafted from ${fileLabel}. Review and adjust before publishing.`,
+    formattingNotes: suggestion.formattingNotes,
+    reportType: suggestion.reportType,
+    sections: suggestion.sections,
+    source: "fallback",
+  };
 }
 
 /**

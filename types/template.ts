@@ -15,6 +15,17 @@ export type PageOrientation = "portrait" | "landscape";
 
 export type TemplateStatus = "draft" | "published";
 
+export type DocumentKind = "report" | "invoice";
+
+export type TemplateOrigin = "manual" | "ai" | "imported";
+
+export interface InvoiceTemplateDefaults {
+  termsAndConditions: string;
+  notes: string;
+  numberingPrefix: string;
+  defaultGstBranchId: string | null;
+}
+
 export interface ThemeColors {
   primary: string;
   secondary: string;
@@ -41,6 +52,9 @@ export interface ReportTemplate {
   reportType: ReportType;
   description: string;
   status: TemplateStatus;
+  documentKind: DocumentKind;
+  origin: TemplateOrigin;
+  invoiceDefaults: InvoiceTemplateDefaults | null;
   layout: TemplateLayout;
   sections: TemplateSection[];
   createdAt: string;

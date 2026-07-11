@@ -49,6 +49,9 @@ export default function EditTemplatePage({
     reportType: template.reportType,
     description: template.description,
     status: template.status,
+    documentKind: template.documentKind,
+    origin: template.origin,
+    invoiceDefaults: template.invoiceDefaults,
     layout: template.layout,
     sections: template.sections,
   };

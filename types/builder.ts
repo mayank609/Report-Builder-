@@ -1,3 +1,5 @@
+import type { GstBranch } from "./gst";
+
 export interface Builder {
   id: string;
   name: string;
@@ -11,4 +13,13 @@ export interface Builder {
   logoUrl: string;
   establishedYear: number;
   specialization: string[];
+  pan?: string;
+  gstBranches: GstBranch[];
+  bankDetails?: {
+    accountName: string;
+    accountNumber: string;
+    ifsc: string;
+    bankName: string;
+    branch: string;
+  };
 }

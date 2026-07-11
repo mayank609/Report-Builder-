@@ -9,6 +9,9 @@ export function createBlankTemplate(): TemplateFormValues {
     reportType: "daily_progress",
     description: "",
     status: "draft",
+    documentKind: "report",
+    origin: "manual",
+    invoiceDefaults: null,
     layout: {
       coverPage: true,
       header: true,
@@ -24,11 +27,22 @@ export function createBlankTemplate(): TemplateFormValues {
   };
 }
 
+export function createBlankInvoiceDefaults(): NonNullable<TemplateFormValues["invoiceDefaults"]> {
+  return {
+    termsAndConditions:
+      "Payment due within 30 days of invoice date. Late payments may attract interest at 1.5% per month.",
+    notes: "Thank you for your business.",
+    numberingPrefix: "INV",
+    defaultGstBranchId: null,
+  };
+}
+
 export function createSectionInstance(
   type: TemplateSection["type"],
   defaultTitle: string,
   defaultDescription: string,
-  order: number
+  order: number,
+  width: TemplateSection["width"] = "full"
 ): TemplateSection {
   return {
     id: generateId("section"),
@@ -40,5 +54,6 @@ export function createSectionInstance(
     visible: true,
     collapsed: false,
     order,
+    width,
   };
 }

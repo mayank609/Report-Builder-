@@ -1,9 +1,22 @@
 import { storage, STORAGE_KEYS } from "@/lib/storage";
 import { generateId } from "@/lib/utils";
+import { numberingService } from "./numberingService";
+import { settingsService } from "./settingsService";
 import type { GeneratedReport, ReportInput } from "@/types";
 import seedReportsData from "@/mock-data/reports.json";
 
 const seedReports = seedReportsData as unknown as GeneratedReport[];
+
+function normalizeReport(report: GeneratedReport): GeneratedReport {
+  return {
+    ...report,
+    reportNumber: report.reportNumber || report.id.toUpperCase(),
+    sections: report.sections.map((section) => ({
+      ...section,
+      width: section.width ?? "full",
+    })),
+  };
+}
 
 function readCustomReports(): GeneratedReport[] {
   return storage.get<GeneratedReport[]>(STORAGE_KEYS.reports, []);
@@ -22,7 +35,7 @@ function mergeReports(): GeneratedReport[] {
   const seeds = seedReports.filter(
     (r) => !customIds.has(r.id) && !deletedSeedIds.has(r.id)
   );
-  return [...custom, ...seeds];
+  return [...custom, ...seeds].map(normalizeReport);
 }
 
 export const reportService = {
@@ -39,9 +52,17 @@ export const reportService = {
 
   async create(input: ReportInput): Promise<GeneratedReport> {
     const now = new Date().toISOString();
+    const settings = await settingsService.get();
+    const existingCount = mergeReports().length;
+    const reportNumber = await numberingService.next(
+      "report",
+      settings.reportNumberPrefix,
+      existingCount
+    );
     const report: GeneratedReport = {
       ...input,
       id: generateId("rpt"),
+      reportNumber,
       createdAt: now,
       updatedAt: now,
     };

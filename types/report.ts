@@ -1,4 +1,4 @@
-import type { SectionType } from "./section";
+import type { SectionType, SectionWidth } from "./section";
 
 export type ReportStatus = "draft" | "generating" | "completed" | "failed";
 
@@ -8,6 +8,7 @@ export interface ReportSectionContent {
   title: string;
   html: string;
   order: number;
+  width: SectionWidth;
 }
 
 export interface ReportSignature {
@@ -31,6 +32,7 @@ export interface ReportGenerationContext {
 
 export interface GeneratedReport {
   id: string;
+  reportNumber: string;
   name: string;
   templateId: string;
   templateName: string;
@@ -51,4 +53,7 @@ export interface GeneratedReport {
   updatedAt: string;
 }
 
-export type ReportInput = Omit<GeneratedReport, "id" | "createdAt" | "updatedAt">;
+export type ReportInput = Omit<
+  GeneratedReport,
+  "id" | "reportNumber" | "createdAt" | "updatedAt"
+>;

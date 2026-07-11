@@ -13,9 +13,18 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useReports } from "@/features/reports/hooks/use-reports";
 import { ReportDownloadMenu } from "@/features/reports/components/report-download-menu";
-import { formatDate } from "@/lib/utils";
+import { useAsync } from "@/hooks/use-async";
+import { clientService } from "@/services";
+import { formatDate, titleCase } from "@/lib/utils";
 import type { GeneratedReport } from "@/types";
 
 const STATUS_VARIANT: Record<GeneratedReport["status"], "success" | "secondary" | "warning" | "destructive"> = {
@@ -27,18 +36,59 @@ const STATUS_VARIANT: Record<GeneratedReport["status"], "success" | "secondary" 
 
 export default function ReportHistoryPage() {
   const { reports, loading, error, refetch, remove } = useReports();
+  const { data: clients } = useAsync(() => clientService.list());
   const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [projectFilter, setProjectFilter] = useState("all");
+  const [clientFilter, setClientFilter] = useState("all");
+  const [reportTypeFilter, setReportTypeFilter] = useState("all");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+
+  const clientLabel = useMemo(() => {
+    const map = new Map<string, string>();
+    (clients ?? []).forEach((c) => map.set(c.id, c.companyName));
+    return map;
+  }, [clients]);
+
+  const projectOptions = useMemo(
+    () => Array.from(new Set(reports.map((r) => r.projectName))).sort(),
+    [reports]
+  );
+  const reportTypeOptions = useMemo(
+    () => Array.from(new Set(reports.map((r) => r.reportType))).sort(),
+    [reports]
+  );
+  const clientOptions = useMemo(
+    () => Array.from(new Set(reports.map((r) => r.clientId).filter((id): id is string => Boolean(id)))),
+    [reports]
+  );
 
   const filtered = useMemo(
     () =>
-      reports.filter(
-        (r) =>
+      reports.filter((r) => {
+        const matchesSearch =
           r.name.toLowerCase().includes(search.toLowerCase()) ||
           r.projectName.toLowerCase().includes(search.toLowerCase()) ||
-          r.templateName.toLowerCase().includes(search.toLowerCase())
-      ),
-    [reports, search]
+          r.templateName.toLowerCase().includes(search.toLowerCase());
+        const matchesStatus = statusFilter === "all" || r.status === statusFilter;
+        const matchesProject = projectFilter === "all" || r.projectName === projectFilter;
+        const matchesClient = clientFilter === "all" || r.clientId === clientFilter;
+        const matchesReportType = reportTypeFilter === "all" || r.reportType === reportTypeFilter;
+        const matchesFrom = !dateFrom || r.context.dateRangeStart >= dateFrom;
+        const matchesTo = !dateTo || r.context.dateRangeEnd <= dateTo;
+        return (
+          matchesSearch &&
+          matchesStatus &&
+          matchesProject &&
+          matchesClient &&
+          matchesReportType &&
+          matchesFrom &&
+          matchesTo
+        );
+      }),
+    [reports, search, statusFilter, projectFilter, clientFilter, reportTypeFilter, dateFrom, dateTo]
   );
 
   return (
@@ -56,14 +106,83 @@ export default function ReportHistoryPage() {
       />
 
       {!loading && !error && reports.length > 0 && (
-        <div className="relative max-w-sm">
-          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search reports..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
-          />
+        <div className="flex flex-col gap-3">
+          <div className="relative max-w-sm">
+            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Search reports..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-36">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All statuses</SelectItem>
+                <SelectItem value="completed">Completed</SelectItem>
+                <SelectItem value="draft">Draft</SelectItem>
+                <SelectItem value="generating">Generating</SelectItem>
+                <SelectItem value="failed">Failed</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={reportTypeFilter} onValueChange={setReportTypeFilter}>
+              <SelectTrigger className="w-44">
+                <SelectValue placeholder="Report type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All report types</SelectItem>
+                {reportTypeOptions.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {titleCase(type)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={projectFilter} onValueChange={setProjectFilter}>
+              <SelectTrigger className="w-44">
+                <SelectValue placeholder="Project" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All projects</SelectItem>
+                {projectOptions.map((name) => (
+                  <SelectItem key={name} value={name}>
+                    {name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={clientFilter} onValueChange={setClientFilter}>
+              <SelectTrigger className="w-44">
+                <SelectValue placeholder="Client" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All clients</SelectItem>
+                {clientOptions.map((id) => (
+                  <SelectItem key={id} value={id}>
+                    {clientLabel.get(id) ?? id}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Input
+              type="date"
+              value={dateFrom}
+              onChange={(e) => setDateFrom(e.target.value)}
+              className="w-40"
+              aria-label="From date"
+            />
+            <Input
+              type="date"
+              value={dateTo}
+              onChange={(e) => setDateTo(e.target.value)}
+              className="w-40"
+              aria-label="To date"
+            />
+          </div>
         </div>
       )}
 
@@ -93,7 +212,7 @@ export default function ReportHistoryPage() {
       )}
 
       {!loading && !error && reports.length > 0 && filtered.length === 0 && (
-        <EmptyState icon={Search} title="No matching reports" description="Try a different search term." />
+        <EmptyState icon={Search} title="No matching reports" description="Try adjusting your search or filters." />
       )}
 
       {!loading && !error && filtered.length > 0 && (

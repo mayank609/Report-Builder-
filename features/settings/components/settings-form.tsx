@@ -7,6 +7,7 @@ import { Save, RotateCcw, KeyRound, ExternalLink } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
@@ -137,6 +138,72 @@ export function SettingsForm() {
               checked={settings.autoIncludeAiSummary}
               onCheckedChange={(checked) => update({ autoIncludeAiSummary: checked })}
             />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="py-5">
+        <CardHeader className="px-5">
+          <CardTitle className="text-base">Invoicing &amp; Numbering</CardTitle>
+          <CardDescription>
+            Applied to every new report and invoice, and pre-filled on new invoices.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4 px-5">
+          <div className="grid gap-4 sm:grid-cols-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="invoicePrefix">Invoice Number Prefix</Label>
+              <Input
+                id="invoicePrefix"
+                value={settings.invoiceNumberPrefix}
+                onChange={(e) => update({ invoiceNumberPrefix: e.target.value.toUpperCase() })}
+              />
+              <p className="text-[11px] text-muted-foreground">
+                Next invoice: {settings.invoiceNumberPrefix}-000001
+              </p>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="reportPrefix">Report Number Prefix</Label>
+              <Input
+                id="reportPrefix"
+                value={settings.reportNumberPrefix}
+                onChange={(e) => update({ reportNumberPrefix: e.target.value.toUpperCase() })}
+              />
+              <p className="text-[11px] text-muted-foreground">
+                Next report: {settings.reportNumberPrefix}-000001
+              </p>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="defaultCurrency">Default Currency</Label>
+              <Input
+                id="defaultCurrency"
+                value={settings.defaultCurrency}
+                onChange={(e) => update({ defaultCurrency: e.target.value.toUpperCase() })}
+              />
+            </div>
+          </div>
+
+          <Separator />
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="defaultInvoiceTerms">Default Terms &amp; Conditions</Label>
+              <Textarea
+                id="defaultInvoiceTerms"
+                rows={3}
+                value={settings.defaultInvoiceTerms}
+                onChange={(e) => update({ defaultInvoiceTerms: e.target.value })}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="defaultInvoiceNotes">Default Notes</Label>
+              <Textarea
+                id="defaultInvoiceNotes"
+                rows={3}
+                value={settings.defaultInvoiceNotes}
+                onChange={(e) => update({ defaultInvoiceNotes: e.target.value })}
+              />
+            </div>
           </div>
         </CardContent>
       </Card>

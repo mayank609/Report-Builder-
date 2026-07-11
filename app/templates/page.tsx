@@ -21,11 +21,15 @@ import {
 import { useTemplates } from "@/features/templates/hooks/use-templates";
 import { TemplateCard } from "@/features/templates/components/template-card";
 import { TemplateListSkeleton } from "@/features/templates/components/template-list-skeleton";
+import { REPORT_TYPES } from "@/lib/constants";
 
 export default function TemplatesPage() {
   const { templates, loading, error, refetch, remove, duplicate } = useTemplates();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [kindFilter, setKindFilter] = useState<string>("all");
+  const [reportTypeFilter, setReportTypeFilter] = useState<string>("all");
+  const [originFilter, setOriginFilter] = useState<string>("all");
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
@@ -34,9 +38,14 @@ export default function TemplatesPage() {
         t.name.toLowerCase().includes(search.toLowerCase()) ||
         t.description.toLowerCase().includes(search.toLowerCase());
       const matchesStatus = statusFilter === "all" || t.status === statusFilter;
-      return matchesSearch && matchesStatus;
+      const matchesKind = kindFilter === "all" || t.documentKind === kindFilter;
+      const matchesReportType =
+        reportTypeFilter === "all" ||
+        (t.documentKind === "report" && t.reportType === reportTypeFilter);
+      const matchesOrigin = originFilter === "all" || t.origin === originFilter;
+      return matchesSearch && matchesStatus && matchesKind && matchesReportType && matchesOrigin;
     });
-  }, [templates, search, statusFilter]);
+  }, [templates, search, statusFilter, kindFilter, reportTypeFilter, originFilter]);
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
@@ -71,6 +80,40 @@ export default function TemplatesPage() {
               <SelectItem value="all">All statuses</SelectItem>
               <SelectItem value="published">Published</SelectItem>
               <SelectItem value="draft">Draft</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={kindFilter} onValueChange={setKindFilter}>
+            <SelectTrigger className="w-full sm:w-40">
+              <SelectValue placeholder="Kind" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All kinds</SelectItem>
+              <SelectItem value="report">Report</SelectItem>
+              <SelectItem value="invoice">Invoice</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={reportTypeFilter} onValueChange={setReportTypeFilter}>
+            <SelectTrigger className="w-full sm:w-48">
+              <SelectValue placeholder="Report type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All report types</SelectItem>
+              {REPORT_TYPES.map((type) => (
+                <SelectItem key={type.value} value={type.value}>
+                  {type.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={originFilter} onValueChange={setOriginFilter}>
+            <SelectTrigger className="w-full sm:w-36">
+              <SelectValue placeholder="Source" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All sources</SelectItem>
+              <SelectItem value="manual">Manual</SelectItem>
+              <SelectItem value="ai">AI Generated</SelectItem>
+              <SelectItem value="imported">Imported</SelectItem>
             </SelectContent>
           </Select>
         </div>

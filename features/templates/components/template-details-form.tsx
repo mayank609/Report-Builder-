@@ -1,6 +1,7 @@
 "use client";
 
 import { Controller, type Control, type FieldErrors } from "react-hook-form";
+import { FileText, Receipt } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,21 +14,47 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { REPORT_TYPES } from "@/lib/constants";
 import type { TemplateFormValues } from "@/features/templates/lib/template-schema";
 
 interface TemplateDetailsFormProps {
   control: Control<TemplateFormValues>;
   errors: FieldErrors<TemplateFormValues>;
+  documentKind: TemplateFormValues["documentKind"];
+  onDocumentKindChange: (kind: TemplateFormValues["documentKind"]) => void;
 }
 
-export function TemplateDetailsForm({ control, errors }: TemplateDetailsFormProps) {
+export function TemplateDetailsForm({
+  control,
+  errors,
+  documentKind,
+  onDocumentKindChange,
+}: TemplateDetailsFormProps) {
   return (
     <Card className="py-5">
       <CardHeader className="px-5">
         <CardTitle className="text-base">Template Details</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4 px-5">
+        <div className="space-y-1.5">
+          <Label>Document Kind</Label>
+          <ToggleGroup
+            type="single"
+            variant="outline"
+            value={documentKind}
+            onValueChange={(value) => value && onDocumentKindChange(value as "report" | "invoice")}
+            className="w-full"
+          >
+            <ToggleGroupItem value="report" className="flex-1 gap-1.5">
+              <FileText className="size-4" /> Report
+            </ToggleGroupItem>
+            <ToggleGroupItem value="invoice" className="flex-1 gap-1.5">
+              <Receipt className="size-4" /> Invoice
+            </ToggleGroupItem>
+          </ToggleGroup>
+        </div>
+
         <div className="space-y-1.5">
           <Label htmlFor="name">Template Name</Label>
           <Controller
@@ -42,27 +69,29 @@ export function TemplateDetailsForm({ control, errors }: TemplateDetailsFormProp
           )}
         </div>
 
-        <div className="space-y-1.5">
-          <Label htmlFor="reportType">Report Type</Label>
-          <Controller
-            name="reportType"
-            control={control}
-            render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger id="reportType" className="w-full">
-                  <SelectValue placeholder="Select a report type" />
-                </SelectTrigger>
-                <SelectContent>
-                  {REPORT_TYPES.map((type) => (
-                    <SelectItem key={type.value} value={type.value}>
-                      {type.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-          />
-        </div>
+        {documentKind === "report" && (
+          <div className="space-y-1.5">
+            <Label htmlFor="reportType">Report Type</Label>
+            <Controller
+              name="reportType"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger id="reportType" className="w-full">
+                    <SelectValue placeholder="Select a report type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {REPORT_TYPES.map((type) => (
+                      <SelectItem key={type.value} value={type.value}>
+                        {type.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+          </div>
+        )}
 
         <div className="space-y-1.5">
           <Label htmlFor="description">Description</Label>

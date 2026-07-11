@@ -1,5 +1,5 @@
 import { SECTION_CATALOG } from "@/lib/constants";
-import type { Project, ReportTemplate } from "@/types";
+import type { DocumentKind, Project, ReportTemplate } from "@/types";
 
 const SECTION_TYPE_LIST = SECTION_CATALOG.map((s) => s.type).join(", ");
 const REPORT_TYPE_LIST =
@@ -106,4 +106,59 @@ Respond with STRICT JSON only (no markdown fences, no commentary) matching exact
 }
 
 For each section's "html" field, write clean, semantic HTML fragment content (use <p>, <table class="report-table">, <ul>, <strong> as appropriate) suitable for direct embedding in a printed PDF report. Use tables for structured data like materials, budget, labour, equipment, and milestones. Be specific and reference the real data provided above — do not invent facts. Keep each section concise but informative (60-180 words of prose plus any tables).`;
+}
+
+/** Truncated so a large uploaded document doesn't blow the prompt token budget. */
+const MAX_IMPORT_TEXT_CHARS = 12000;
+
+export function buildTemplateImportPrompt(
+  extractedText: string,
+  documentKind: DocumentKind
+): string {
+  const text = extractedText.slice(0, MAX_IMPORT_TEXT_CHARS);
+
+  if (documentKind === "invoice") {
+    return `You are an expert at reading real-world invoices for a construction SaaS platform. A user uploaded a Word/PDF document they already use as an invoice. Extract a reusable invoice template from it.
+
+Document text (may include OCR/extraction noise, ignore garbled fragments):
+"""
+${text}
+"""
+
+Respond with STRICT JSON only (no markdown fences, no commentary) matching exactly this shape:
+
+{
+  "name": string (a short name for this invoice template, e.g. "Standard Tax Invoice"),
+  "description": string (1-2 sentences),
+  "termsAndConditions": string (the payment/terms text found in the document, or a sensible professional default if none is present),
+  "notes": string (any standing notes/footer text found in the document, or a short thank-you note if none is present),
+  "formattingNotes": string (guidance on layout, fonts, tone based on what the document looks like),
+  "detectedGstin": string or null (a 15-character Indian GSTIN found in the document text, else null)
+}
+
+Ensure the JSON is valid and parses with JSON.parse.`;
+  }
+
+  return `You are an expert construction reporting consultant. A user uploaded a Word/PDF document they already use as a report. Extract a reusable report template structure from it.
+
+Document text (may include OCR/extraction noise, ignore garbled fragments):
+"""
+${text}
+"""
+
+Respond with STRICT JSON only (no markdown fences, no commentary) matching exactly this shape:
+
+{
+  "name": string,
+  "reportType": one of [${REPORT_TYPE_LIST}],
+  "description": string (1-2 sentences),
+  "sections": [
+    { "type": one of [${SECTION_TYPE_LIST}], "title": string, "description": string }
+  ],
+  "recommendedTables": string[],
+  "formattingNotes": string,
+  "summaryPrompts": string[]
+}
+
+Infer 5 to 12 sections from the headings/structure present in the document, in the order they appear. Only use section types from the provided list — pick the closest match for anything that doesn't map exactly. Ensure the JSON is valid and parses with JSON.parse.`;
 }

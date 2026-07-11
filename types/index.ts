@@ -3,6 +3,8 @@ export * from "./builder";
 export * from "./client";
 export * from "./contractor";
 export * from "./engineer";
+export * from "./gst";
+export * from "./invoice";
 export * from "./project";
 export * from "./report";
 export * from "./section";

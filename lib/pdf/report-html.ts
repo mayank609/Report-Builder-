@@ -44,6 +44,48 @@ function watermarkDataUri(text: string): string {
   return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 }
 
+function renderSectionHtml(
+  section: GeneratedReport["sections"][number],
+  signatures: GeneratedReport["signatures"]
+): string {
+  const bodyHtml =
+    section.type === "signature" && signatures && signatures.length > 0
+      ? buildSignatureBlockHtml(signatures)
+      : section.html;
+  return `
+      <section class="report-section">
+        <h2>${escapeHtml(section.title)}</h2>
+        <div class="section-body">${bodyHtml}</div>
+      </section>`;
+}
+
+/**
+ * Two consecutive half-width sections are placed side-by-side in a single
+ * row; everything else (full-width, or an unpaired trailing half-width
+ * section) renders as its own full-width row.
+ */
+function buildSectionsRowsHtml(
+  sections: GeneratedReport["sections"],
+  report: GeneratedReport
+): string {
+  const rows: string[] = [];
+  let i = 0;
+  while (i < sections.length) {
+    const current = sections[i];
+    const next = sections[i + 1];
+    if (current.width === "half" && next?.width === "half") {
+      rows.push(
+        `<div class="report-section-row">${renderSectionHtml(current, report.signatures)}${renderSectionHtml(next, report.signatures)}</div>`
+      );
+      i += 2;
+    } else {
+      rows.push(renderSectionHtml(current, report.signatures));
+      i += 1;
+    }
+  }
+  return rows.join("\n");
+}
+
 export function buildReportHtmlDocument(ctx: ReportRenderContext): string {
   const { report, builderName, builderAddress, projectAddress, clientName, contractorName, engineerName } = ctx;
   const { layout } = report;
@@ -87,19 +129,7 @@ export function buildReportHtmlDocument(ctx: ReportRenderContext): string {
       </div>`
     : "";
 
-  const sectionsHtml = sections
-    .map((section) => {
-      const bodyHtml =
-        section.type === "signature" && report.signatures && report.signatures.length > 0
-          ? buildSignatureBlockHtml(report.signatures)
-          : section.html;
-      return `
-      <section class="report-section">
-        <h2>${escapeHtml(section.title)}</h2>
-        <div class="section-body">${bodyHtml}</div>
-      </section>`;
-    })
-    .join("\n");
+  const sectionsHtml = buildSectionsRowsHtml(sections, report);
 
   return `<!doctype html>
 <html lang="en">
@@ -144,6 +174,11 @@ export function buildReportHtmlDocument(ctx: ReportRenderContext): string {
   .cover-meta span { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: #9ca3af; }
   .cover-meta strong { font-size: 14px; color: ${layout.themeColors.text}; font-weight: 600; }
   .report-section { margin-bottom: 28px; break-inside: avoid; }
+  .report-section-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px;
+    margin-bottom: 28px; break-inside: avoid;
+  }
+  .report-section-row .report-section { margin-bottom: 0; }
   .report-section h2 {
     font-size: 15px; font-weight: 700; color: ${layout.themeColors.primary};
     border-bottom: 1px solid #e5e7eb; padding-bottom: 6px; margin: 0 0 12px;

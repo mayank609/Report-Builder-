@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FileStack, FileCheck2, FilePenLine, Sparkles, Plus } from "lucide-react";
+import { FileStack, FileCheck2, FilePenLine, Sparkles, Plus, IndianRupee, Receipt } from "lucide-react";
 import { motion } from "framer-motion";
 
 import { PageHeader } from "@/components/shared/page-header";
@@ -13,6 +13,7 @@ import { analyticsService } from "@/services";
 import { DashboardSkeleton } from "@/features/dashboard/components/dashboard-skeleton";
 import { RecentReportsCard } from "@/features/dashboard/components/recent-reports-card";
 import { TopTemplatesCard } from "@/features/dashboard/components/top-templates-card";
+import { RecentInvoicesCard } from "@/features/dashboard/components/recent-invoices-card";
 
 export default function DashboardPage() {
   const { data, loading, error, refetch } = useAsync(() =>
@@ -29,6 +30,11 @@ export default function DashboardPage() {
             <Button variant="outline" asChild>
               <Link href="/templates/new">
                 <Plus className="size-4" /> New Template
+              </Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link href="/invoices/new">
+                <Receipt className="size-4" /> New Invoice
               </Link>
             </Button>
             <Button asChild>
@@ -51,7 +57,7 @@ export default function DashboardPage() {
           transition={{ duration: 0.25 }}
           className="space-y-6"
         >
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
             <StatCard
               label="Total Templates"
               value={data.totalTemplates}
@@ -80,11 +86,30 @@ export default function DashboardPage() {
               trend="Last 5 generated"
               trendDirection="neutral"
             />
+            <StatCard
+              label="Total Invoices"
+              value={data.totalInvoices}
+              icon={Receipt}
+              trend={`${data.overdueInvoiceCount} overdue`}
+              trendDirection={data.overdueInvoiceCount > 0 ? "down" : "up"}
+            />
+            <StatCard
+              label="Outstanding"
+              value={new Intl.NumberFormat("en-IN", {
+                style: "currency",
+                currency: "INR",
+                maximumFractionDigits: 0,
+              }).format(data.outstandingInvoiceAmount)}
+              icon={IndianRupee}
+              trend="Sent + overdue invoices"
+              trendDirection="neutral"
+            />
           </div>
 
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="grid gap-4 lg:grid-cols-3">
             <RecentReportsCard reports={data.recentReports} />
             <TopTemplatesCard templates={data.topTemplates} />
+            <RecentInvoicesCard invoices={data.recentInvoices} />
           </div>
         </motion.div>
       )}
