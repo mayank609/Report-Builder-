@@ -92,6 +92,7 @@ export function buildReportHtmlDocument(ctx: ReportRenderContext): string {
   const sections = [...report.sections].sort((a, b) => a.order - b.order);
 
   const pageSizeCss = layout.orientation === "landscape" ? "11in 8.5in" : "8.5in 11in";
+  const docWrapperMaxWidth = layout.orientation === "landscape" ? "1180px" : "860px";
 
   const watermarkStyle = layout.watermark
     ? `background-image: url("${watermarkDataUri(builderName || "DRAFT")}"); background-repeat: repeat;`
@@ -146,7 +147,7 @@ export function buildReportHtmlDocument(ctx: ReportRenderContext): string {
     background: ${layout.themeColors.background};
     ${watermarkStyle}
   }
-  .doc-wrapper { max-width: 860px; margin: 0 auto; padding: 32px 40px 64px; }
+  .doc-wrapper { max-width: ${docWrapperMaxWidth}; margin: 0 auto; padding: 32px 40px 64px; }
   .report-header {
     display: flex; justify-content: space-between; align-items: center;
     font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em;

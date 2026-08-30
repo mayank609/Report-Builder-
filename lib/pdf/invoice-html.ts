@@ -38,6 +38,7 @@ export function buildInvoiceHtmlDocument(ctx: InvoiceRenderContext): string {
   const { totals, currency } = invoice;
   const money = (v: number) => formatMoney(v, currency);
   const pageSizeCss = layout.orientation === "landscape" ? "11in 8.5in" : "8.5in 11in";
+  const docWrapperMaxWidth = layout.orientation === "landscape" ? "1180px" : "860px";
 
   const lineItemsRows = invoice.lineItems
     .map((item, index) => {
@@ -99,7 +100,7 @@ export function buildInvoiceHtmlDocument(ctx: InvoiceRenderContext): string {
     color: ${layout.themeColors.text};
     background: ${layout.themeColors.background};
   }
-  .doc-wrapper { max-width: 860px; margin: 0 auto; padding: 32px 40px 64px; }
+  .doc-wrapper { max-width: ${docWrapperMaxWidth}; margin: 0 auto; padding: 32px 40px 64px; }
   .letterhead {
     display: flex; justify-content: space-between; align-items: flex-start;
     border-bottom: 2px solid ${layout.themeColors.primary}; padding-bottom: 16px; margin-bottom: 20px;

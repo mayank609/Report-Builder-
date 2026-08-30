@@ -7,8 +7,8 @@ import { buildTemplatePreviewHtml } from "@/features/templates/lib/build-templat
 import type { TemplateFormValues } from "@/features/templates/lib/template-schema";
 import { cn } from "@/lib/utils";
 
-const PAGE_WIDTH = 816;
-const PAGE_HEIGHT = 1200;
+const PORTRAIT_WIDTH = 816;
+const PORTRAIT_HEIGHT = 1200;
 
 interface TemplatePreviewPanelProps {
   values: TemplateFormValues;
@@ -25,6 +25,10 @@ export function TemplatePreviewPanel({
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(0.4);
 
+  const isLandscape = values.layout.orientation === "landscape";
+  const pageWidth = isLandscape ? PORTRAIT_HEIGHT : PORTRAIT_WIDTH;
+  const pageHeight = isLandscape ? PORTRAIT_WIDTH : PORTRAIT_HEIGHT;
+
   useEffect(() => {
     const timeout = setTimeout(() => setHtml(buildTemplatePreviewHtml(values)), 300);
     return () => clearTimeout(timeout);
@@ -35,11 +39,11 @@ export function TemplatePreviewPanel({
     if (!el) return;
     const observer = new ResizeObserver((entries) => {
       const width = entries[0]?.contentRect.width;
-      if (width) setScale(Math.min(width / PAGE_WIDTH, 1));
+      if (width) setScale(Math.min(width / pageWidth, 1));
     });
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [pageWidth]);
 
   const sectionCount = values.sections.filter((s) => s.visible).length;
 
@@ -59,8 +63,8 @@ export function TemplatePreviewPanel({
       <div ref={containerRef} className="flex-1 overflow-auto bg-muted/40 p-3">
         <div
           style={{
-            width: PAGE_WIDTH * scale,
-            height: PAGE_HEIGHT * scale,
+            width: pageWidth * scale,
+            height: pageHeight * scale,
           }}
           className="mx-auto"
         >
@@ -68,8 +72,8 @@ export function TemplatePreviewPanel({
             title="Template preview"
             srcDoc={html}
             style={{
-              width: PAGE_WIDTH,
-              height: PAGE_HEIGHT,
+              width: pageWidth,
+              height: pageHeight,
               transform: `scale(${scale})`,
               transformOrigin: "top left",
               border: "none",
