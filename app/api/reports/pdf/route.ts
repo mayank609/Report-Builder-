@@ -20,12 +20,16 @@ interface PdfRequestBody {
 async function launchBrowser(): Promise<Browser> {
   if (process.env.VERCEL) {
     const [{ default: chromium }, { default: puppeteerCore }] = await Promise.all([
-      import("@sparticuz/chromium"),
+      import("@sparticuz/chromium-min"),
       import("puppeteer-core"),
     ]);
+    
+    // Download the pre-compiled chromium binary at runtime since it's >50MB
+    const packUrl = "https://github.com/Sparticuz/chromium/releases/download/v149.0.0/chromium-v149.0.0-pack.x64.tar";
+    
     return puppeteerCore.launch({
       args: chromium.args,
-      executablePath: await chromium.executablePath(),
+      executablePath: await chromium.executablePath(packUrl),
       headless: true,
     });
   }

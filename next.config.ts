@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
   // resolution also gets mangled the same way when bundled.
   serverExternalPackages: [
     "puppeteer-core",
-    "@sparticuz/chromium",
+    "@sparticuz/chromium-min",
     "pdf-parse",
     "mammoth",
     "@napi-rs/canvas",
