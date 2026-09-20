@@ -33,4 +33,4 @@ function getClientPromise(): Promise<MongoClient> {
 
 export default getClientPromise;
 
-export const DB_NAME = "report-builder";
+export const DB_NAME = process.env.MONGODB_DB_NAME || "report-builder";
