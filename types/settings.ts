@@ -13,7 +13,7 @@ export interface AppSettings {
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
-  organizationName: "Sinclair Construction Group",
+  organizationName: "",
   defaultFont: "Inter",
   defaultOrientation: "portrait",
   geminiApiKey: "",
