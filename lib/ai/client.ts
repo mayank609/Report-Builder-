@@ -7,6 +7,7 @@ import type {
   AiTemplateSuggestion,
   DocumentKind,
   Project,
+  ProjectRecord,
   ReportTemplate,
 } from "@/types";
 
@@ -47,6 +48,7 @@ export async function generateReportFromContext(params: {
   engineerName: string | null;
   dateRangeStart: string;
   dateRangeEnd: string;
+  projectRecords?: ProjectRecord[];
 }): Promise<AiReportSuggestion> {
   const headers = await withApiKeyHeaders();
   const res = await fetch("/api/ai/generate-report", {

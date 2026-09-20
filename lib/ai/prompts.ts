@@ -1,5 +1,5 @@
 import { SECTION_CATALOG } from "@/lib/constants";
-import type { DocumentKind, Project, ReportTemplate } from "@/types";
+import type { DocumentKind, Project, ProjectRecord, ReportTemplate } from "@/types";
 
 const SECTION_TYPE_LIST = SECTION_CATALOG.map((s) => s.type).join(", ");
 const REPORT_TYPE_LIST =
@@ -36,6 +36,7 @@ export function buildReportGenerationPrompt(params: {
   engineerName: string | null;
   dateRangeStart: string;
   dateRangeEnd: string;
+  projectRecords?: ProjectRecord[];
 }): string {
   const {
     template,
@@ -46,6 +47,7 @@ export function buildReportGenerationPrompt(params: {
     engineerName,
     dateRangeStart,
     dateRangeEnd,
+    projectRecords = [],
   } = params;
 
   const visibleSections = template.sections
@@ -85,6 +87,17 @@ ${JSON.stringify(
     dailyLogs: project.dailyLogs.filter(
       (log) => log.date >= dateRangeStart && log.date <= dateRangeEnd
     ),
+    projectRecords: projectRecords.map((r) => ({
+      referenceNumber: r.referenceNumber,
+      type: r.type,
+      date: r.date,
+      status: r.status,
+      priority: r.priority,
+      responsiblePerson: r.responsiblePerson,
+      title: r.title,
+      notes: r.notes,
+      data: r.data,
+    })),
   },
   null,
   2
@@ -105,7 +118,8 @@ Respond with STRICT JSON only (no markdown fences, no commentary) matching exact
   "aiSummary": string (a 2-4 sentence executive summary of overall project health and this period's progress)
 }
 
-For each section's "html" field, write clean, semantic HTML fragment content (use <p>, <table class="report-table">, <ul>, <strong> as appropriate) suitable for direct embedding in a printed PDF report. Use tables for structured data like materials, budget, labour, equipment, and milestones. Be specific and reference the real data provided above — do not invent facts. Keep each section concise but informative (60-180 words of prose plus any tables).`;
+For each section's "html" field, write clean, semantic HTML fragment content (use <p>, <table class="report-table">, <ul>, <strong> as appropriate) suitable for direct embedding in a printed PDF report. Use tables for structured data like materials, budget, labour, equipment, and milestones.
+IMPORTANT: When projectRecords are provided above (e.g. RFIs, Inspections, HSE safety items, Site Instructions, Change Orders, Punch Lists), explicitly cite their reference numbers (e.g. RFI-0001, INSP-0002, HSE-0001, CO-0001) as factual evidence in the relevant sections. Be specific and reference the real data provided above — do not invent facts. Keep each section concise but informative (60-180 words of prose plus any tables).`;
 }
 
 /** Truncated so a large uploaded document doesn't blow the prompt token budget. */

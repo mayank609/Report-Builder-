@@ -32,6 +32,9 @@ export function buildTemplatePreviewHtml(values: TemplateFormValues): string {
       engineerId: null,
       reportType: values.reportType,
       status: "draft",
+      version: 1,
+      versionHistory: [],
+      sourceRecordIds: [],
       context: {
         builderId: "preview",
         projectId: "preview",

@@ -6,6 +6,7 @@ export * from "./engineer";
 export * from "./gst";
 export * from "./invoice";
 export * from "./project";
+export * from "./record";
 export * from "./report";
 export * from "./section";
 export * from "./settings";

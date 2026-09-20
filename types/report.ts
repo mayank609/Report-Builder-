@@ -1,6 +1,17 @@
 import type { SectionType, SectionWidth } from "./section";
 
-export type ReportStatus = "draft" | "generating" | "completed" | "failed";
+export type ReportLifecycleStatus =
+  | "draft"
+  | "in_review"
+  | "approved"
+  | "signed"
+  | "final";
+
+export type ReportStatus =
+  | ReportLifecycleStatus
+  | "generating"
+  | "completed"
+  | "failed";
 
 export interface ReportSectionContent {
   sectionId: string;
@@ -28,6 +39,15 @@ export interface ReportGenerationContext {
   templateId: string;
   dateRangeStart: string;
   dateRangeEnd: string;
+  recordIds?: string[];
+}
+
+export interface ReportVersionEntry {
+  version: number;
+  date: string;
+  action: string;
+  actor: string;
+  summary?: string;
 }
 
 export interface GeneratedReport {
@@ -44,6 +64,9 @@ export interface GeneratedReport {
   engineerId: string | null;
   reportType: string;
   status: ReportStatus;
+  version: number;
+  versionHistory: ReportVersionEntry[];
+  sourceRecordIds: string[];
   context: ReportGenerationContext;
   sections: ReportSectionContent[];
   layout: import("./template").TemplateLayout;
@@ -57,3 +80,4 @@ export type ReportInput = Omit<
   GeneratedReport,
   "id" | "reportNumber" | "createdAt" | "updatedAt"
 >;
+

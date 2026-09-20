@@ -1,21 +1,24 @@
-import { storage, STORAGE_KEYS } from "@/lib/storage";
 import { DEFAULT_SETTINGS, type AppSettings } from "@/types";
+import { fetchDocument, updateDocument } from "@/lib/api-client";
 
 export const settingsService = {
   async get(): Promise<AppSettings> {
-    const stored = storage.get<AppSettings>(STORAGE_KEYS.settings, DEFAULT_SETTINGS);
-    return { ...DEFAULT_SETTINGS, ...stored };
+    try {
+      const stored = await fetchDocument<AppSettings>("settings", "app-settings");
+      if (stored) return { ...DEFAULT_SETTINGS, ...stored };
+    } catch {
+      // Settings doc doesn't exist yet — use defaults
+    }
+    return { ...DEFAULT_SETTINGS };
   },
 
   async update(partial: Partial<AppSettings>): Promise<AppSettings> {
     const current = await this.get();
     const updated = { ...current, ...partial };
-    storage.set(STORAGE_KEYS.settings, updated);
-    return updated;
+    return updateDocument<AppSettings>("settings", "app-settings", updated);
   },
 
   async reset(): Promise<AppSettings> {
-    storage.set(STORAGE_KEYS.settings, DEFAULT_SETTINGS);
-    return DEFAULT_SETTINGS;
+    return this.update(DEFAULT_SETTINGS);
   },
 };

@@ -1,31 +1,24 @@
 import type { Project } from "@/types";
-import projectsData from "@/mock-data/projects.json";
-
-const projects = projectsData as Project[];
+import { fetchCollection, fetchDocument, createDocument, updateDocument, deleteDocument } from "@/lib/api-client";
 
 export const projectService = {
   async list(): Promise<Project[]> {
-    return projects;
+    return fetchCollection<Project>("projects");
   },
 
   async getById(id: string): Promise<Project | null> {
-    return projects.find((p) => p.id === id) ?? null;
+    return fetchDocument<Project>("projects", id);
   },
 
-  async getByBuilderId(builderId: string): Promise<Project[]> {
-    return projects.filter((p) => p.builderId === builderId);
+  async create(input: Partial<Project>): Promise<Project> {
+    return createDocument<Project>("projects", input);
   },
 
-  async filterLogsByDateRange(
-    project: Project,
-    start: string,
-    end: string
-  ): Promise<Project["dailyLogs"]> {
-    const startTime = new Date(start).getTime();
-    const endTime = new Date(end).getTime();
-    return project.dailyLogs.filter((log) => {
-      const logTime = new Date(log.date).getTime();
-      return logTime >= startTime && logTime <= endTime;
-    });
+  async update(id: string, partial: Partial<Project>): Promise<Project> {
+    return updateDocument<Project>("projects", id, partial);
+  },
+
+  async remove(id: string): Promise<void> {
+    return deleteDocument("projects", id);
   },
 };

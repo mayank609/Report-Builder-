@@ -13,6 +13,7 @@ import type {
   AiTemplateSuggestion,
   DocumentKind,
   Project,
+  ProjectRecord,
   ReportTemplate,
   SectionType,
 } from "@/types";
@@ -86,6 +87,7 @@ export async function generateReportSuggestion(params: {
   engineerName: string | null;
   dateRangeStart: string;
   dateRangeEnd: string;
+  projectRecords?: ProjectRecord[];
   apiKey: string | null;
 }): Promise<AiReportSuggestion> {
   const { apiKey, ...rest } = params;
@@ -424,7 +426,7 @@ function buildFallbackTemplateSuggestion(userPrompt: string): AiTemplateSuggesti
   };
 }
 
-function buildFallbackReportSuggestion(params: {
+export async function buildFallbackReportSuggestion(params: {
   template: ReportTemplate;
   project: Project;
   builderName: string;
@@ -433,20 +435,24 @@ function buildFallbackReportSuggestion(params: {
   engineerName: string | null;
   dateRangeStart: string;
   dateRangeEnd: string;
-}): AiReportSuggestion {
-  const { template, project, dateRangeStart, dateRangeEnd } = params;
+  projectRecords?: ProjectRecord[];
+}): Promise<AiReportSuggestion> {
+  const { template, project } = params;
+  const logsInRange = project.dailyLogs.filter(
+    (log) => log.date >= params.dateRangeStart && log.date <= params.dateRangeEnd
+  );
+
   const visibleSections = template.sections
     .filter((s) => s.visible)
     .sort((a, b) => a.order - b.order);
-
-  const logsInRange = project.dailyLogs.filter(
-    (log) => log.date >= dateRangeStart && log.date <= dateRangeEnd
-  );
 
   const sections = visibleSections.map((section) => ({
     sectionId: section.id,
     html: renderFallbackSectionHtml(section.type, project, logsInRange, params),
   }));
+
+  const recordCount = params.projectRecords?.length ?? 0;
+  const recordSummary = recordCount > 0 ? ` Report synthesizes ${recordCount} field evidence records.` : "";
 
   return {
     sections,
@@ -459,7 +465,7 @@ function buildFallbackReportSuggestion(params: {
       logsInRange.length > 0
         ? `${logsInRange.length} daily log(s) were recorded during this reporting period with no unresolved safety incidents.`
         : "No daily logs were recorded during this specific reporting period."
-    }`,
+    }${recordSummary}`,
     source: "fallback",
   };
 }
@@ -475,6 +481,7 @@ function renderFallbackSectionHtml(
     engineerName: string | null;
     dateRangeStart: string;
     dateRangeEnd: string;
+    projectRecords?: ProjectRecord[];
   }
 ): string {
   switch (type) {

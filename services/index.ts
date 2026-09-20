@@ -6,6 +6,7 @@ export * from "./engineerService";
 export * from "./invoiceService";
 export * from "./numberingService";
 export * from "./projectService";
+export * from "./recordService";
 export * from "./reportService";
 export * from "./settingsService";
 export * from "./templateService";

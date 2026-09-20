@@ -1,19 +1,24 @@
 import type { Contractor } from "@/types";
-import contractorsData from "@/mock-data/contractors.json";
-
-const contractors = contractorsData as Contractor[];
+import { fetchCollection, fetchDocument, createDocument, updateDocument, deleteDocument } from "@/lib/api-client";
 
 export const contractorService = {
   async list(): Promise<Contractor[]> {
-    return contractors;
+    return fetchCollection<Contractor>("contractors");
   },
 
   async getById(id: string): Promise<Contractor | null> {
-    return contractors.find((c) => c.id === id) ?? null;
+    return fetchDocument<Contractor>("contractors", id);
   },
 
-  async getByIds(ids: string[]): Promise<Contractor[]> {
-    const set = new Set(ids);
-    return contractors.filter((c) => set.has(c.id));
+  async create(input: Omit<Contractor, "id">): Promise<Contractor> {
+    return createDocument<Contractor>("contractors", input as Partial<Contractor>);
+  },
+
+  async update(id: string, partial: Partial<Contractor>): Promise<Contractor> {
+    return updateDocument<Contractor>("contractors", id, partial);
+  },
+
+  async remove(id: string): Promise<void> {
+    return deleteDocument("contractors", id);
   },
 };

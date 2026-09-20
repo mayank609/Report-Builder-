@@ -1,4 +1,6 @@
+import { Suspense } from "react";
 import { PageHeader } from "@/components/shared/page-header";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ReportGeneratorForm } from "@/features/reports/components/report-generator-form";
 
 export default function GenerateReportPage() {
@@ -8,7 +10,10 @@ export default function GenerateReportPage() {
         title="Generate Report"
         description="Combine a template with live project data to generate a formatted report with AI."
       />
-      <ReportGeneratorForm />
+      <Suspense fallback={<Skeleton className="h-64 w-full" />}>
+        <ReportGeneratorForm />
+      </Suspense>
     </div>
   );
 }
+

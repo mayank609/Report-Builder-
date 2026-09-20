@@ -14,6 +14,7 @@ import { DashboardSkeleton } from "@/features/dashboard/components/dashboard-ske
 import { RecentReportsCard } from "@/features/dashboard/components/recent-reports-card";
 import { TopTemplatesCard } from "@/features/dashboard/components/top-templates-card";
 import { RecentInvoicesCard } from "@/features/dashboard/components/recent-invoices-card";
+import { OnboardingGuide } from "@/features/dashboard/components/onboarding-guide";
 
 export default function DashboardPage() {
   const { data, loading, error, refetch } = useAsync(() =>
@@ -22,6 +23,7 @@ export default function DashboardPage() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
+      <OnboardingGuide />
       <PageHeader
         title="Dashboard"
         description="Overview of your report templates and generated reports."

@@ -1,8 +1,7 @@
-"use client";
-
+import { Suspense } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-
+import { Skeleton } from "@/components/ui/skeleton";
 import { InvoiceGeneratorForm } from "@/features/invoices/components/invoice-generator-form";
 
 export default function NewInvoicePage() {
@@ -22,7 +21,9 @@ export default function NewInvoicePage() {
           GST is calculated automatically — CGST + SGST for same-state supply, IGST across states.
         </p>
       </div>
-      <InvoiceGeneratorForm />
+      <Suspense fallback={<Skeleton className="h-64 w-full" />}>
+        <InvoiceGeneratorForm />
+      </Suspense>
     </div>
   );
 }

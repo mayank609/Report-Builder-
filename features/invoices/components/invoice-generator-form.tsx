@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Plus, Trash2, Settings2, Save, Send, Receipt } from "lucide-react";
@@ -61,6 +61,9 @@ function newLineItem() {
 
 export function InvoiceGeneratorForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const queryProjectId = searchParams.get("projectId");
+
   const { builders, projects, clients, templates, loading, error, refetch } =
     useInvoiceReferenceData();
   const [submitting, setSubmitting] = useState<"draft" | "sent" | null>(null);
@@ -100,6 +103,33 @@ export function InvoiceGeneratorForm() {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Pre-fill from query param
+  useEffect(() => {
+    if (queryProjectId && projects.length > 0) {
+      const p = projects.find((proj) => proj.id === queryProjectId);
+      if (p) {
+        setValue("projectId", p.id);
+        if (p.builderId) setValue("builderId", p.builderId);
+        if (p.clientId) {
+          setValue("clientId", p.clientId);
+          const c = clients.find((cl) => cl.id === p.clientId);
+          if (c) {
+            setValue("billTo", {
+              clientId: c.id,
+              name: c.name,
+              companyName: c.companyName || c.name,
+              address: c.address || "",
+              gstin: c.gstin || "",
+              state: c.billingState || "",
+            });
+          }
+        }
+      }
+    } else if (builders.length === 1 && !getValues("builderId")) {
+      setValue("builderId", builders[0].id);
+    }
+  }, [queryProjectId, projects, clients, builders, setValue, getValues]);
 
   const { fields, append, remove } = useFieldArray({ control, name: "lineItems" });
 

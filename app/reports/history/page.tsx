@@ -30,6 +30,10 @@ import type { GeneratedReport } from "@/types";
 const STATUS_VARIANT: Record<GeneratedReport["status"], "success" | "secondary" | "warning" | "destructive"> = {
   completed: "success",
   draft: "secondary",
+  in_review: "warning",
+  approved: "success",
+  signed: "secondary",
+  final: "success",
   generating: "warning",
   failed: "destructive",
 };
@@ -123,8 +127,12 @@ export default function ReportHistoryPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All statuses</SelectItem>
-                <SelectItem value="completed">Completed</SelectItem>
                 <SelectItem value="draft">Draft</SelectItem>
+                <SelectItem value="in_review">In Review</SelectItem>
+                <SelectItem value="approved">Approved</SelectItem>
+                <SelectItem value="signed">Signed</SelectItem>
+                <SelectItem value="final">Final</SelectItem>
+                <SelectItem value="completed">Completed</SelectItem>
                 <SelectItem value="generating">Generating</SelectItem>
                 <SelectItem value="failed">Failed</SelectItem>
               </SelectContent>

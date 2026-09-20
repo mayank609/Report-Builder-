@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { generateReportSuggestion, resolveApiKey } from "@/lib/ai/gemini";
-import type { Project, ReportTemplate } from "@/types";
+import type { Project, ProjectRecord, ReportTemplate } from "@/types";
 
 interface GenerateReportRequestBody {
   template: ReportTemplate;
@@ -12,6 +12,7 @@ interface GenerateReportRequestBody {
   engineerName: string | null;
   dateRangeStart: string;
   dateRangeEnd: string;
+  projectRecords?: ProjectRecord[];
 }
 
 export async function POST(request: NextRequest) {
@@ -37,6 +38,7 @@ export async function POST(request: NextRequest) {
       engineerName: body.engineerName,
       dateRangeStart: body.dateRangeStart,
       dateRangeEnd: body.dateRangeEnd,
+      projectRecords: body.projectRecords,
       apiKey,
     });
     return NextResponse.json(suggestion);

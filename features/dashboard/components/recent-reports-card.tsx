@@ -10,6 +10,10 @@ import type { GeneratedReport } from "@/types";
 const STATUS_VARIANT: Record<GeneratedReport["status"], "success" | "secondary" | "warning" | "destructive"> = {
   completed: "success",
   draft: "secondary",
+  in_review: "warning",
+  approved: "success",
+  signed: "secondary",
+  final: "success",
   generating: "warning",
   failed: "destructive",
 };

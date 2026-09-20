@@ -1,101 +1,28 @@
-import { storage, STORAGE_KEYS } from "@/lib/storage";
-import { generateId } from "@/lib/utils";
 import type { ReportTemplate, TemplateInput } from "@/types";
-import seedTemplatesData from "@/mock-data/templates.json";
-
-const seedTemplates = seedTemplatesData as ReportTemplate[];
-
-function normalizeTemplate(template: ReportTemplate): ReportTemplate {
-  return {
-    ...template,
-    documentKind: template.documentKind ?? "report",
-    origin: template.origin ?? (template.aiGenerated ? "ai" : "manual"),
-    invoiceDefaults: template.invoiceDefaults ?? null,
-    sections: template.sections.map((section) => ({
-      ...section,
-      width: section.width ?? "full",
-    })),
-  };
-}
-
-function readCustomTemplates(): ReportTemplate[] {
-  return storage.get<ReportTemplate[]>(STORAGE_KEYS.templates, []);
-}
-
-function writeCustomTemplates(templates: ReportTemplate[]): void {
-  storage.set(STORAGE_KEYS.templates, templates);
-}
-
-function readDeletedSeedIds(): string[] {
-  return storage.get<string[]>(STORAGE_KEYS.deletedSeedTemplateIds, []);
-}
-
-function mergeTemplates(): ReportTemplate[] {
-  const custom = readCustomTemplates();
-  const customIds = new Set(custom.map((t) => t.id));
-  const deletedSeedIds = new Set(readDeletedSeedIds());
-  const seeds = seedTemplates.filter(
-    (t) => !customIds.has(t.id) && !deletedSeedIds.has(t.id)
-  );
-  return [...custom, ...seeds].map(normalizeTemplate);
-}
+import { fetchCollection, fetchDocument, createDocument, updateDocument, deleteDocument } from "@/lib/api-client";
 
 export const templateService = {
   async list(): Promise<ReportTemplate[]> {
-    return mergeTemplates().sort(
-      (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-    );
+    return fetchCollection<ReportTemplate>("templates");
   },
 
   async getById(id: string): Promise<ReportTemplate | null> {
-    const all = mergeTemplates();
-    return all.find((t) => t.id === id) ?? null;
+    return fetchDocument<ReportTemplate>("templates", id);
   },
 
   async create(input: TemplateInput): Promise<ReportTemplate> {
-    const now = new Date().toISOString();
-    const template: ReportTemplate = {
-      ...input,
-      id: generateId("tpl"),
-      createdAt: now,
-      updatedAt: now,
-      usageCount: 0,
-    };
-    const custom = readCustomTemplates();
-    writeCustomTemplates([template, ...custom]);
-    return template;
+    return createDocument<ReportTemplate>("templates", { ...input, usageCount: 0 });
   },
 
   async update(
     id: string,
     input: Partial<TemplateInput> & { usageCount?: number }
   ): Promise<ReportTemplate> {
-    const existing = await this.getById(id);
-    if (!existing) {
-      throw new Error(`Template ${id} not found`);
-    }
-    const updated: ReportTemplate = {
-      ...existing,
-      ...input,
-      id: existing.id,
-      updatedAt: new Date().toISOString(),
-    };
-    const custom = readCustomTemplates();
-    const withoutId = custom.filter((t) => t.id !== id);
-    writeCustomTemplates([updated, ...withoutId]);
-    return updated;
+    return updateDocument<ReportTemplate>("templates", id, input);
   },
 
   async remove(id: string): Promise<void> {
-    const custom = readCustomTemplates();
-    if (custom.some((t) => t.id === id)) {
-      writeCustomTemplates(custom.filter((t) => t.id !== id));
-      return;
-    }
-    const deletedSeedIds = readDeletedSeedIds();
-    if (!deletedSeedIds.includes(id)) {
-      storage.set(STORAGE_KEYS.deletedSeedTemplateIds, [...deletedSeedIds, id]);
-    }
+    return deleteDocument("templates", id);
   },
 
   async duplicate(id: string): Promise<ReportTemplate> {

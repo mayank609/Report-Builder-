@@ -48,9 +48,14 @@ export function SettingsForm() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await settingsService.update(settings);
-      setTheme(settings.defaultTheme);
-      toast.success("Settings saved");
+      const payload: AppSettings = {
+        ...settings,
+        onboardingCompleted: Boolean(settings.organizationName.trim() || settings.onboardingCompleted),
+      };
+      await settingsService.update(payload);
+      setSettings(payload);
+      setTheme(payload.defaultTheme);
+      toast.success("Settings saved successfully");
     } catch {
       toast.error("Failed to save settings");
     } finally {
@@ -68,17 +73,137 @@ export function SettingsForm() {
     <div className="space-y-6">
       <Card className="py-5">
         <CardHeader className="px-5">
-          <CardTitle className="text-base">Organization</CardTitle>
-          <CardDescription>General information used across generated reports.</CardDescription>
+          <CardTitle className="text-base">Organization &amp; Company Details</CardTitle>
+          <CardDescription>
+            These details appear on your report headers, invoices, and exported documents.
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 px-5">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="orgName">Organization / Company Name</Label>
+              <Input
+                id="orgName"
+                placeholder="e.g. Apex Infrastructure Pvt. Ltd."
+                value={settings.organizationName}
+                onChange={(e) => update({ organizationName: e.target.value })}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="orgGstin">GSTIN / Tax ID</Label>
+              <Input
+                id="orgGstin"
+                placeholder="27AABCA1234F1Z5"
+                value={settings.organizationGstin}
+                onChange={(e) => update({ organizationGstin: e.target.value.toUpperCase() })}
+              />
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="orgEmail">Email Address</Label>
+              <Input
+                id="orgEmail"
+                type="email"
+                placeholder="contact@apexinfra.com"
+                value={settings.organizationEmail}
+                onChange={(e) => update({ organizationEmail: e.target.value })}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="orgPhone">Phone Number</Label>
+              <Input
+                id="orgPhone"
+                placeholder="+91 98765 43210"
+                value={settings.organizationPhone}
+                onChange={(e) => update({ organizationPhone: e.target.value })}
+              />
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="orgAddress">Address</Label>
+              <Input
+                id="orgAddress"
+                placeholder="Suite 401, Tech Park, Andheri East, Mumbai, 400069"
+                value={settings.organizationAddress}
+                onChange={(e) => update({ organizationAddress: e.target.value })}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="orgWebsite">Website</Label>
+              <Input
+                id="orgWebsite"
+                placeholder="https://apexinfra.com"
+                value={settings.organizationWebsite}
+                onChange={(e) => update({ organizationWebsite: e.target.value })}
+              />
+            </div>
+          </div>
+
           <div className="space-y-1.5">
-            <Label htmlFor="orgName">Organization Name</Label>
+            <Label htmlFor="orgLogo">Logo URL</Label>
             <Input
-              id="orgName"
-              value={settings.organizationName}
-              onChange={(e) => update({ organizationName: e.target.value })}
+              id="orgLogo"
+              placeholder="https://example.com/logo.png"
+              value={settings.organizationLogoUrl}
+              onChange={(e) => update({ organizationLogoUrl: e.target.value })}
             />
+            {settings.organizationLogoUrl && (
+              <div className="mt-2 flex items-center gap-3">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={settings.organizationLogoUrl}
+                  alt="Organization Logo Preview"
+                  className="h-10 max-w-32 rounded border object-contain p-1"
+                  onError={(e) => {
+                    (e.target as HTMLElement).style.display = "none";
+                  }}
+                />
+                <span className="text-xs text-muted-foreground">Logo preview</span>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="py-5">
+        <CardHeader className="px-5">
+          <CardTitle className="text-base">User Profile</CardTitle>
+          <CardDescription>Your personal information for signing reports and audits.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4 px-5">
+          <div className="grid gap-4 sm:grid-cols-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="userName">Your Full Name</Label>
+              <Input
+                id="userName"
+                placeholder="e.g. Rajesh Sharma"
+                value={settings.userName}
+                onChange={(e) => update({ userName: e.target.value })}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="userRole">Your Role / Designation</Label>
+              <Input
+                id="userRole"
+                placeholder="e.g. Senior Project Manager"
+                value={settings.userRole}
+                onChange={(e) => update({ userRole: e.target.value })}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="userEmail">Your Email</Label>
+              <Input
+                id="userEmail"
+                type="email"
+                placeholder="rajesh@apexinfra.com"
+                value={settings.userEmail}
+                onChange={(e) => update({ userEmail: e.target.value })}
+              />
+            </div>
           </div>
         </CardContent>
       </Card>

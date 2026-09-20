@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Sparkles, Loader2, FileStack } from "lucide-react";
@@ -29,15 +29,26 @@ import {
 } from "@/features/reports/lib/generate-report-schema";
 import { generateReportFromContext } from "@/lib/ai/client";
 import { withChart } from "@/lib/pdf/charts";
-import { reportService, templateService } from "@/services";
+import { reportService, templateService, recordService } from "@/services";
 import { formatDate } from "@/lib/utils";
-import type { ReportInput, ReportSectionContent } from "@/types";
+import type { ReportInput, ReportSectionContent, ProjectRecord } from "@/types";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
+import { RECORD_TYPE_CONFIGS } from "@/types/record";
 
 export function ReportGeneratorForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const queryProjectId = searchParams.get("projectId");
+  const queryRecordIds = searchParams.get("recordIds");
   const { builders, projects, contractors, clients, engineers, templates, loading, error } =
     useReportReferenceData();
   const [generating, setGenerating] = useState(false);
+
+  // Evidence / Records state
+  const [availableRecords, setAvailableRecords] = useState<ProjectRecord[]>([]);
+  const [selectedRecordIds, setSelectedRecordIds] = useState<string[]>([]);
+  const [recordsLoading, setRecordsLoading] = useState(false);
 
   const {
     control,
@@ -61,6 +72,50 @@ export function ReportGeneratorForm() {
 
   const builderId = watch("builderId");
   const projectId = watch("projectId");
+
+  // Pre-fill from query param or auto-select builder if only one
+  useEffect(() => {
+    if (queryProjectId && projects.length > 0) {
+      const match = projects.find((p) => p.id === queryProjectId);
+      if (match) {
+        setValue("builderId", match.builderId);
+        setValue("projectId", match.id);
+        setValue("clientId", match.clientId);
+        if (match.contractorIds.length > 0) {
+          setValue("contractorId", match.contractorIds[0]);
+        }
+        if (match.engineerIds.length > 0) {
+          setValue("engineerId", match.engineerIds[0]);
+        }
+      }
+    } else if (builders.length === 1 && !builderId) {
+      setValue("builderId", builders[0].id);
+    }
+  }, [queryProjectId, projects, builders, setValue, builderId]);
+
+  // Load records for selected project
+  useEffect(() => {
+    if (!projectId) {
+      setAvailableRecords([]);
+      setSelectedRecordIds([]);
+      return;
+    }
+    setRecordsLoading(true);
+    recordService
+      .list({ projectId })
+      .then((recs) => {
+        setAvailableRecords(recs);
+        if (queryRecordIds) {
+          const ids = queryRecordIds.split(",").filter(Boolean);
+          setSelectedRecordIds(ids);
+        } else {
+          // By default, select all records
+          setSelectedRecordIds(recs.map((r) => r.id));
+        }
+      })
+      .catch(() => setAvailableRecords([]))
+      .finally(() => setRecordsLoading(false));
+  }, [projectId, queryRecordIds]);
 
   const filteredProjects = useMemo(
     () => projects.filter((p) => !builderId || p.builderId === builderId),
@@ -114,6 +169,10 @@ export function ReportGeneratorForm() {
         return;
       }
 
+      const selectedRecords = availableRecords.filter((r) =>
+        selectedRecordIds.includes(r.id)
+      );
+
       const suggestion = await generateReportFromContext({
         template,
         project,
@@ -123,6 +182,7 @@ export function ReportGeneratorForm() {
         engineerName: engineer?.name ?? null,
         dateRangeStart: values.dateRangeStart,
         dateRangeEnd: values.dateRangeEnd,
+        projectRecords: selectedRecords,
       });
 
       const visibleSections = template.sections
@@ -153,7 +213,18 @@ export function ReportGeneratorForm() {
         contractorId: contractor?.id ?? null,
         engineerId: engineer?.id ?? null,
         reportType: template.reportType,
-        status: "completed",
+        status: "draft",
+        version: 1,
+        versionHistory: [
+          {
+            version: 1,
+            date: new Date().toISOString(),
+            action: "Report generated from project evidence",
+            actor: "System",
+            summary: `${selectedRecords.length} evidence records analyzed`,
+          },
+        ],
+        sourceRecordIds: selectedRecords.map((r) => r.id),
         context: {
           builderId: builder.id,
           projectId: project.id,
@@ -163,6 +234,7 @@ export function ReportGeneratorForm() {
           templateId: template.id,
           dateRangeStart: values.dateRangeStart,
           dateRangeEnd: values.dateRangeEnd,
+          recordIds: selectedRecords.map((r) => r.id),
         },
         sections,
         layout: template.layout,
@@ -175,8 +247,8 @@ export function ReportGeneratorForm() {
 
       toast.success(
         suggestion.source === "gemini"
-          ? "Report generated with Gemini"
-          : "Report generated with smart defaults (no Gemini API key configured)"
+          ? `Report generated with Gemini (${selectedRecords.length} evidence records synthesized)`
+          : `Report generated with smart defaults (${selectedRecords.length} evidence records synthesized)`
       );
       router.push(`/reports/${report.id}/preview`);
     } catch (err) {
@@ -393,6 +465,93 @@ export function ReportGeneratorForm() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Evidence & Project Records Selection */}
+      {selectedProject && (
+        <Card className="py-5">
+          <CardHeader className="flex flex-row items-center justify-between px-5">
+            <div>
+              <CardTitle className="text-base">Project Evidence &amp; Records</CardTitle>
+              <CardDescription>
+                Select which site logs, RFIs, quality inspections, and safety records to include as source evidence.
+              </CardDescription>
+            </div>
+            {availableRecords.length > 0 && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="text-xs"
+                onClick={() => {
+                  if (selectedRecordIds.length === availableRecords.length) {
+                    setSelectedRecordIds([]);
+                  } else {
+                    setSelectedRecordIds(availableRecords.map((r) => r.id));
+                  }
+                }}
+              >
+                {selectedRecordIds.length === availableRecords.length
+                  ? "Deselect All"
+                  : `Select All (${availableRecords.length})`}
+              </Button>
+            )}
+          </CardHeader>
+          <CardContent className="px-5">
+            {recordsLoading && <Skeleton className="h-24 w-full" />}
+            {!recordsLoading && availableRecords.length === 0 && (
+              <p className="rounded border border-dashed p-4 text-center text-xs text-muted-foreground">
+                No records found for this project. Report will use baseline project logs.
+              </p>
+            )}
+            {!recordsLoading && availableRecords.length > 0 && (
+              <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+                {availableRecords.map((rec) => {
+                  const cfg = RECORD_TYPE_CONFIGS[rec.type] || {
+                    label: rec.type,
+                    prefix: "REC",
+                    color: "text-foreground",
+                    bgColor: "bg-muted border-border",
+                  };
+                  const isChecked = selectedRecordIds.includes(rec.id);
+                  return (
+                    <div
+                      key={rec.id}
+                      className={`flex items-start gap-3 rounded-lg border p-2.5 transition-colors ${
+                        isChecked ? "border-primary/50 bg-primary/[0.02]" : "bg-card"
+                      }`}
+                    >
+                      <Checkbox
+                        id={`rec-${rec.id}`}
+                        checked={isChecked}
+                        onCheckedChange={(checked) => {
+                          setSelectedRecordIds((prev) =>
+                            checked ? [...prev, rec.id] : prev.filter((id) => id !== rec.id)
+                          );
+                        }}
+                        className="mt-0.5"
+                      />
+                      <label htmlFor={`rec-${rec.id}`} className="flex-1 cursor-pointer text-xs space-y-0.5">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono font-bold text-primary">{rec.referenceNumber}</span>
+                          <span className={`rounded border px-1.5 py-0.5 text-[10px] font-medium ${cfg.bgColor} ${cfg.color}`}>
+                            {cfg.label}
+                          </span>
+                          <span className="text-[10px] text-muted-foreground">{rec.date}</span>
+                        </div>
+                        <p className="font-medium text-foreground">{rec.title}</p>
+                        {rec.notes && <p className="line-clamp-1 text-muted-foreground">{rec.notes}</p>}
+                      </label>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
+              <span>{selectedRecordIds.length} of {availableRecords.length} records selected as evidence</span>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {selectedProject && (
         <Card className="py-5">
