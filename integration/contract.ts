@@ -119,6 +119,69 @@ export const pushFinancialsRequestSchema = z.object({
 
 export type PushFinancialsRequest = z.infer<typeof pushFinancialsRequestSchema>;
 
+/**
+ * Project master data Finance sends when a contractor creates the project in
+ * Finance first ("enter once"). Report Builder creates the field project,
+ * client and builder records from it, so nothing is typed twice.
+ */
+const optionalText = z.string().max(500).optional();
+
+export const financeProjectMasterSchema = z.object({
+  id: shortText,
+  code: shortText,
+  name: shortText,
+  description: z.string().max(5000),
+  type: shortText,
+  status: z.enum(["planning", "active", "on_hold", "completed", "closed", "cancelled"]),
+  address: z.object({
+    line1: shortText,
+    line2: optionalText,
+    city: shortText,
+    state: shortText,
+    postalCode: shortText,
+    country: shortText,
+  }),
+  startDate: isoDate,
+  targetEndDate: isoDate,
+  actualEndDate: isoDate.optional(),
+  progressPercent: z.number().min(0).max(100),
+  client: z
+    .object({
+      id: shortText,
+      name: shortText,
+      companyName: shortText,
+      type: z.enum(["individual", "corporate", "government"]),
+      email: optionalText,
+      phone: optionalText,
+      address: optionalText,
+      state: optionalText,
+      gstNumber: optionalText,
+    })
+    .nullable(),
+});
+
+/** The contractor's own company (Finance settings), used as the report "builder". */
+export const financeCompanyProfileSchema = z.object({
+  name: shortText,
+  legalName: shortText,
+  email: optionalText,
+  phone: optionalText,
+  address: optionalText,
+  gstNumber: optionalText,
+  panNumber: optionalText,
+});
+
+/** Request body for POST /api/integration/v1/projects (create from Finance). */
+export const createProjectFromFinanceRequestSchema = z.object({
+  project: financeProjectMasterSchema,
+  company: financeCompanyProfileSchema,
+  snapshot: financeProjectSnapshotSchema,
+});
+
+export type FinanceProjectMaster = z.infer<typeof financeProjectMasterSchema>;
+export type FinanceCompanyProfile = z.infer<typeof financeCompanyProfileSchema>;
+export type CreateProjectFromFinanceRequest = z.infer<typeof createProjectFromFinanceRequestSchema>;
+
 /** Report Builder routes Finance can deep-link to. */
 export const REPORT_BUILDER_ROUTES = {
   project: (reportProjectId: string) => `/projects/${encodeURIComponent(reportProjectId)}`,

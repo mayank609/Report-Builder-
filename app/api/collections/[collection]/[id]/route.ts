@@ -10,6 +10,8 @@ import {
   toApiDocument,
   type PublicCollection,
 } from "@/lib/collections";
+import { applyReportVersioning, REPORT_VERSIONS_COLLECTION } from "@/lib/report-versions";
+import type { GeneratedReport } from "@/types";
 
 type Params = { params: Promise<{ collection: string; id: string }> };
 
@@ -46,7 +48,7 @@ export async function PUT(request: NextRequest, { params }: Params) {
   const parsed = await readJsonObject(request);
   if (!parsed.ok) return parsed.response;
 
-  const doc = sanitizeIncoming(collection, parsed.body);
+  let doc = sanitizeIncoming(collection, parsed.body);
   // The document id is immutable; it always comes from the URL.
   delete doc.id;
   doc.updatedAt = new Date().toISOString();
@@ -56,8 +58,15 @@ export async function PUT(request: NextRequest, { params }: Params) {
 
   try {
     const client = await getClient();
-    const result = await client
-      .db(DB_NAME)
+    const db = client.db(DB_NAME);
+
+    if (collection === "reports") {
+      const current = await db.collection<GeneratedReport>("reports").findOne({ id });
+      if (!current) return notFound();
+      doc = await applyReportVersioning(db, current, doc);
+    }
+
+    const result = await db
       .collection(collection)
       .findOneAndUpdate(
         { id },
@@ -84,8 +93,12 @@ export async function DELETE(_request: NextRequest, { params }: Params) {
 
   try {
     const client = await getClient();
-    const result = await client.db(DB_NAME).collection(collection).deleteOne({ id });
+    const db = client.db(DB_NAME);
+    const result = await db.collection(collection).deleteOne({ id });
     if (result.deletedCount === 0) return notFound();
+    if (collection === "reports") {
+      await db.collection(REPORT_VERSIONS_COLLECTION).deleteMany({ reportId: id });
+    }
     return new NextResponse(null, { status: 204 });
   } catch (error) {
     console.error(`Failed to delete ${id} from ${collection}:`, error);

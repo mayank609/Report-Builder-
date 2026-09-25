@@ -25,9 +25,30 @@ The shared pattern, which these modules now follow:
 
 Sources: Procore [Project Financials](https://www.procore.com/project-financials), [Change Events](https://support.procore.com/products/online/user-guide/project-level/change-events/tutorials/about-change-events) and [360 Reporting](https://en-ca.support.procore.com/products/online/user-guide/project-level/reports); market positioning from [PlanRadar 2026 comparison](https://www.planradar.com/us/the-15-best-construction-management-software-tools-in-2026-compared-honestly/) and [Archdesk](https://archdesk.com/blog/compare-archdesk-procore-acc-buildertrend).
 
+### Where the incumbents fall short, and what we do instead
+
+| Known gap (from 2026 reviews) | Our answer |
+|---|---|
+| Procore's accounting integration is described as "sub-par", with very limited ERP sync ([projul](https://projul.com/competitors/procore-vs-buildertrend/), [US Tech Automations](https://ustechautomations.com/resources/blog/procore-vs-buildertrend-2026)) | Finance *is* the accounting side. Budget, commitments, AR, retention and change orders flow into reports through a validated contract, with no third-party sync. |
+| Change orders "still need a person to update the invoice" or reports, in both Procore and Buildertrend (same sources) | Change orders are mirrored automatically on every sync. Manual field COs are preserved. |
+| Buildertrend has no native accounting integration, so estimates are re-keyed | **Enter once:** the contractor creates the project in Finance, and one click creates the field project, client and builder in Report Builder. |
+| Revision history is strong for drawings (Procore sheet overlays), weak for generated reports | Every report revision is archived in full, server-side. Any version can be viewed read-only or restored as a new version. Each version records which Finance sync its numbers came from. |
+| AI report writers can invent numbers | Money is rendered deterministically from the snapshot. AI writes commentary only. |
+| Heavy onboarding ("someone's entire job to manage it for the first year") ([Capterra](https://www.capterra.com/p/70092/Buildertrend/reviews/)) | Two focused modules with deep links. Report forms are pre-filled from Finance. |
+
 ---
 
-## 2. What the integration does today
+## 2. The contractor workflow (end to end)
+
+1. **Finance → Projects & Budget → New Project.** The contractor enters everything once: code, name, type, client, PM, site address, dates, contract value, budget envelope, retention and tags. Budgets, cost codes, change orders, invoices, bills and payments are then managed in Finance as usual.
+2. **Project sheet → Report Builder → "Create in Report Builder".** This creates the field project, with the client and the contractor's own company as the report "builder". The live financial snapshot is attached. The call is idempotent, so pressing it again just refreshes. **"Sync financials"** republishes figures at any time.
+3. **"Generate report"** opens Report Builder with the project, builder and client pre-selected. Pick a template; the **Financial Summary (Live)**, Budget, Cost Forecast and Change Order sections use the Finance numbers.
+4. **Iterate.** Edit sections, regenerate with AI, sign, approve. Every content change archives the previous version, bumps `vN`, and records what changed ("Changed: Budget Status, …").
+5. **Version History.** Open any earlier version read-only in the same viewer (print/PDF works too), or **Restore** it. A restore creates a new version, never rewrites history, clears signatures that attested to other content, and sends the report back to *In Review*.
+
+---
+
+## 3. What the integration does today
 
 ```
  ┌──────────── Finance (BuildFin) ────────────┐            ┌──────────── Report Builder (BuildReport) ────────────┐
@@ -53,7 +74,19 @@ Sources: Procore [Project Financials](https://www.procore.com/project-financials
 
 ---
 
-## 3. Deploying the two modules together
+### API surface
+
+| Endpoint | Module | Purpose |
+|---|---|---|
+| `GET /api/integration/v1/projects` | Report Builder | List projects for linking (bearer) |
+| `POST /api/integration/v1/projects` | Report Builder | Create/refresh project + client + builder from Finance (bearer, idempotent) |
+| `PUT/GET /api/integration/v1/projects/:id/financials` | Report Builder | Publish/read the financial snapshot (bearer) |
+| `GET /api/reports/:id/versions` | Report Builder | List archived versions |
+| `GET /api/reports/:id/versions/:n` | Report Builder | Full content of version *n* |
+| `POST /api/reports/:id/versions/:n/restore` | Report Builder | Restore *n* as a new version (409 if identical to current) |
+| `/api/integrations/report-builder/*` | Finance | Server-side proxy holding the API key |
+
+## 4. Deploying the two modules together
 
 | Variable | Module | Purpose |
 |---|---|---|
@@ -71,7 +104,7 @@ Generate the shared key with `openssl rand -hex 32`. Health checks: `GET /api/he
 
 ---
 
-## 4. Production hardening done in this change
+## 5. Production hardening done in this change
 
 Both modules:
 * **Removed malware.** An obfuscated payload had been appended to `postcss.config.mjs` in both repos on Aug 31 (hidden after a run of tabs). It ran on every `next dev`/`next build`. CI now runs `scripts/check-hidden-code.mjs` **before** installing or building anything.
@@ -84,7 +117,9 @@ Report Builder:
 * PDF export no longer allows SSRF: JavaScript is disabled, and private, loopback, link-local and metadata hosts, `file:` and other schemes are blocked. It also has size limits and a render timeout.
 * Report and template previews are sandboxed iframes (no script execution from generated HTML).
 * Numbering is concurrency-safe and portable, with validated doc types. Reports now get a `reportNumber`, which was previously never assigned.
-* Unique indexes on `id`, `invoiceNumber` and `reportNumber` are created on first connect.
+* Unique indexes on `id`, `invoiceNumber`, `reportNumber` and `(reportId, version)` are created on first connect.
+* Report versioning is enforced server-side inside the reports PUT, so no client path can overwrite history. Deleting a report removes its versions.
+* The edit sheet's Save button is reachable again (long sections used to push it off-screen). Builder and project addresses no longer render dangling commas.
 
 Finance:
 * The 120 ms fake latency on every repository call was removed (opt-in via `NEXT_PUBLIC_SIMULATE_LATENCY_MS`).
@@ -92,7 +127,7 @@ Finance:
 
 ---
 
-## 5. Roadmap to a multi-tenant launch (not done yet)
+## 6. Roadmap to a multi-tenant launch (not done yet)
 
 These are platform-level decisions for the parent SaaS, in priority order:
 
@@ -105,7 +140,9 @@ These are platform-level decisions for the parent SaaS, in priority order:
 4. **Server-side totals.** Report Builder invoice totals and numbers are computed in the browser. Recompute them on the server before saving.
 5. **Rate limiting** on the AI and PDF routes, and a reused browser pool for PDF export.
 6. **Tests.** Contract round-trip tests (Finance snapshot → Report Builder mapping), API security tests, and Playwright smoke tests of the sync flow (the flow in §2 was verified end-to-end manually).
-7. **Money precision.** Amounts are JS floats rounded to 2 dp. Consider integer minor units in storage before real payments go through the system.
+7. **Currency display.** Parts of Report Builder (lists, dashboards, the AI fallback tables) still hard-code `$`. The Finance-driven sections and charts use the snapshot currency. Add an org-level currency setting and use it everywhere.
+8. **Visual diff between versions.** Today you can view and restore; a side-by-side section diff would match Procore's drawing overlays.
+9. **Money precision.** Amounts are JS floats rounded to 2 dp. Consider integer minor units in storage before real payments go through the system.
 
 ### Changing the contract
 

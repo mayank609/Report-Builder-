@@ -20,6 +20,10 @@ export async function ensureIndexes(db: Db): Promise<void> {
       { reportNumber: 1 },
       { unique: true, name: "uniq_report_number", partialFilterExpression: { reportNumber: { $type: "string" } } }
     ),
+    db.collection("report_versions").createIndex(
+      { reportId: 1, version: -1 },
+      { unique: true, name: "uniq_report_version" }
+    ),
     db.collection("records").createIndex({ projectId: 1, date: -1 }, { name: "project_date" }),
     db.collection("finance_snapshots").createIndex({ reportProjectId: 1, receivedAt: -1 }, { name: "project_received" })
   );
