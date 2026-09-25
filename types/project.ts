@@ -1,3 +1,5 @@
+import type { FinanceProjectSnapshot } from "@/integration/contract";
+
 export type ProjectStatus =
   | "planning"
   | "in_progress"
@@ -226,4 +228,15 @@ export interface Project {
   risks: ProjectRisk[];
   lookAheadSchedule: ProjectLookAheadActivity[];
   visitorLog: ProjectVisitorLogEntry[];
+  /**
+   * Live financials published by the Finance module (BuildFin). Written only
+   * by the integration API — the generic collections API refuses to modify it.
+   */
+  finance?: ProjectFinanceLink | null;
+}
+
+export interface ProjectFinanceLink {
+  financeProjectId: string;
+  syncedAt: string;
+  snapshot: FinanceProjectSnapshot;
 }

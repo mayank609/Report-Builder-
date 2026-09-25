@@ -1,84 +1,94 @@
 import { NextRequest, NextResponse } from "next/server";
 import getClient, { DB_NAME } from "@/lib/mongodb";
+import {
+  isPublicCollection,
+  isValidId,
+  notFound,
+  readJsonObject,
+  redactedFields,
+  sanitizeIncoming,
+  toApiDocument,
+  type PublicCollection,
+} from "@/lib/collections";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ collection: string; id: string }> }
-) {
+type Params = { params: Promise<{ collection: string; id: string }> };
+
+/** Singleton documents that are created on first save rather than via POST. */
+const UPSERT_COLLECTIONS = new Set<PublicCollection>(["settings"]);
+
+async function resolveParams(params: Params["params"]) {
+  const { collection, id } = await params;
+  if (!isPublicCollection(collection) || !isValidId(id)) return null;
+  return { collection, id };
+}
+
+export async function GET(_request: NextRequest, { params }: Params) {
+  const resolved = await resolveParams(params);
+  if (!resolved) return notFound();
+  const { collection, id } = resolved;
+
   try {
-    const { collection, id } = await params;
     const client = await getClient();
-    const db = client.db(DB_NAME);
-    
-    const doc = await db.collection(collection).findOne({ id });
-    
-    if (!doc) {
-      return NextResponse.json({ error: "Not found" }, { status: 404 });
-    }
-    
-    const cleanDoc = { ...doc } as Record<string, unknown>;
-    delete cleanDoc._id;
-    return NextResponse.json(cleanDoc);
+    const doc = await client.db(DB_NAME).collection(collection).findOne({ id });
+    if (!doc) return notFound();
+    return NextResponse.json(toApiDocument(collection, doc));
   } catch (error) {
-    console.error(`Failed to fetch ${await params.then(p => p.id)} from ${await params.then(p => p.collection)}:`, error);
+    console.error(`Failed to fetch ${id} from ${collection}:`, error);
     return NextResponse.json({ error: "Failed to fetch data" }, { status: 500 });
   }
 }
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ collection: string; id: string }> }
-) {
+export async function PUT(request: NextRequest, { params }: Params) {
+  const resolved = await resolveParams(params);
+  if (!resolved) return notFound();
+  const { collection, id } = resolved;
+
+  const parsed = await readJsonObject(request);
+  if (!parsed.ok) return parsed.response;
+
+  const doc = sanitizeIncoming(collection, parsed.body);
+  // The document id is immutable; it always comes from the URL.
+  delete doc.id;
+  doc.updatedAt = new Date().toISOString();
+
+  // Purge secrets that older versions persisted (e.g. settings.geminiApiKey).
+  const purge = Object.fromEntries(redactedFields(collection).map((field) => [field, ""]));
+
   try {
-    const { collection, id } = await params;
-    const body = await request.json();
     const client = await getClient();
-    const db = client.db(DB_NAME);
-    
-    const doc = {
-      ...body,
-      updatedAt: new Date().toISOString(),
-    };
-    // Don't update the _id field
-    delete doc._id;
-    
-    const result = await db.collection(collection).findOneAndUpdate(
-      { id },
-      { $set: doc },
-      { returnDocument: "after", upsert: true }
-    );
-    
-    if (!result) {
-      return NextResponse.json({ error: "Not found" }, { status: 404 });
-    }
-    
-    const cleanResult = { ...result } as Record<string, unknown>;
-    delete cleanResult._id;
-    return NextResponse.json(cleanResult);
+    const result = await client
+      .db(DB_NAME)
+      .collection(collection)
+      .findOneAndUpdate(
+        { id },
+        {
+          $set: doc,
+          $setOnInsert: { id },
+          ...(Object.keys(purge).length ? { $unset: purge } : {}),
+        },
+        { returnDocument: "after", upsert: UPSERT_COLLECTIONS.has(collection) }
+      );
+
+    if (!result) return notFound();
+    return NextResponse.json(toApiDocument(collection, result));
   } catch (error) {
-    console.error(`Failed to update ${await params.then(p => p.id)} in ${await params.then(p => p.collection)}:`, error);
+    console.error(`Failed to update ${id} in ${collection}:`, error);
     return NextResponse.json({ error: "Failed to update record" }, { status: 500 });
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ collection: string; id: string }> }
-) {
+export async function DELETE(_request: NextRequest, { params }: Params) {
+  const resolved = await resolveParams(params);
+  if (!resolved) return notFound();
+  const { collection, id } = resolved;
+
   try {
-    const { collection, id } = await params;
     const client = await getClient();
-    const db = client.db(DB_NAME);
-    
-    const result = await db.collection(collection).deleteOne({ id });
-    
-    if (result.deletedCount === 0) {
-      return NextResponse.json({ error: "Not found" }, { status: 404 });
-    }
-    
+    const result = await client.db(DB_NAME).collection(collection).deleteOne({ id });
+    if (result.deletedCount === 0) return notFound();
     return new NextResponse(null, { status: 204 });
   } catch (error) {
-    console.error(`Failed to delete ${await params.then(p => p.id)} from ${await params.then(p => p.collection)}:`, error);
+    console.error(`Failed to delete ${id} from ${collection}:`, error);
     return NextResponse.json({ error: "Failed to delete record" }, { status: 500 });
   }
 }
