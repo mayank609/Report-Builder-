@@ -67,7 +67,7 @@ export function ReportEditSheet({ open, onOpenChange, report, onSaved }: ReportE
             and PDF export.
           </SheetDescription>
         </SheetHeader>
-        <ScrollArea className="flex-1">
+        <ScrollArea className="min-h-0 flex-1">
           <div className="space-y-4 p-4">
             <div className="space-y-1.5">
               <Label htmlFor="report-name">Report Name</Label>
@@ -82,7 +82,7 @@ export function ReportEditSheet({ open, onOpenChange, report, onSaved }: ReportE
                   rows={5}
                   value={section.html}
                   onChange={(e) => updateSection(section.sectionId, { html: e.target.value })}
-                  className="font-mono text-xs"
+                  className="max-h-72 font-mono text-xs"
                 />
               </div>
             ))}

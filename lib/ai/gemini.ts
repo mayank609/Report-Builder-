@@ -315,6 +315,11 @@ function buildFallbackTemplateSuggestion(userPrompt: string): AiTemplateSuggesti
       title: "Cost Forecast & Earned Value",
       description: "Earned value, cost/schedule performance and forecast at completion.",
     });
+    baseSections.push({
+      type: "financial_summary",
+      title: "Financial Summary",
+      description: "Live contract, cost, billing and margin figures from the Finance module.",
+    });
   }
 
   if (isChangeOrder) {
@@ -691,6 +696,18 @@ function renderFallbackSectionHtml(
             `<tr><td>${v.date}</td><td>${v.visitorName}</td><td>${v.company}</td><td>${v.purpose}</td><td>${v.timeIn} – ${v.timeOut}</td><td>${v.escortedBy}</td></tr>`
         )
         .join("")}</tbody></table>`;
+    case "financial_summary": {
+      // Figures are rendered from the Finance snapshot (see lib/pdf/financial-summary.ts);
+      // the fallback only adds brief commentary.
+      const budget = project.finance?.snapshot.budget;
+      if (!budget) return "";
+      const drift = budget.utilizationPercent - budget.progressPercent;
+      return `<p>${
+        drift > 3
+          ? `Cost consumption is running ${drift.toFixed(1)} points ahead of physical progress; review committed costs and pending change orders before the next billing cycle.`
+          : "Cost consumption is tracking in line with physical progress."
+      }</p>`;
+    }
     default:
       return `<p>No data available for this section.</p>`;
   }

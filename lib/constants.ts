@@ -114,6 +114,14 @@ export const SECTION_CATALOG: SectionCatalogEntry[] = [
     defaultTitle: "Cost Forecast & Earned Value",
   },
   {
+    type: "financial_summary",
+    label: "Financial Summary (Live)",
+    description:
+      "Live contract, budget, cost, billing and margin figures synced from the Finance module.",
+    icon: "Landmark",
+    defaultTitle: "Financial Summary",
+  },
+  {
     type: "timeline",
     label: "Timeline",
     description: "Milestones with planned vs. actual dates and status.",

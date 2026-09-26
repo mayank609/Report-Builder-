@@ -71,6 +71,7 @@ export function TemplatePreviewPanel({
           <iframe
             title="Template preview"
             srcDoc={html}
+            sandbox="allow-same-origin allow-modals"
             style={{
               width: pageWidth,
               height: pageHeight,

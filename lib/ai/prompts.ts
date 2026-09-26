@@ -83,6 +83,20 @@ ${JSON.stringify(
     equipment: project.equipment,
     labour: project.labour,
     budgetBreakdown: project.budgetBreakdown,
+    // Authoritative money figures from the Finance module (when linked)
+    financeSnapshot: project.finance
+      ? {
+          syncedAt: project.finance.syncedAt,
+          currency: project.finance.snapshot.currency,
+          contract: project.finance.snapshot.contract,
+          budget: project.finance.snapshot.budget,
+          billing: project.finance.snapshot.billing,
+          profitability: project.finance.snapshot.profitability,
+          pendingChangeOrders: project.finance.snapshot.changeOrders.filter(
+            (co) => co.status === "pending"
+          ),
+        }
+      : null,
     milestones: project.milestones,
     dailyLogs: project.dailyLogs.filter(
       (log) => log.date >= dateRangeStart && log.date <= dateRangeEnd
@@ -119,7 +133,7 @@ Respond with STRICT JSON only (no markdown fences, no commentary) matching exact
 }
 
 For each section's "html" field, write clean, semantic HTML fragment content (use <p>, <table class="report-table">, <ul>, <strong> as appropriate) suitable for direct embedding in a printed PDF report. Use tables for structured data like materials, budget, labour, equipment, and milestones.
-IMPORTANT: When projectRecords are provided above (e.g. RFIs, Inspections, HSE safety items, Site Instructions, Change Orders, Punch Lists), explicitly cite their reference numbers (e.g. RFI-0001, INSP-0002, HSE-0001, CO-0001) as factual evidence in the relevant sections. Be specific and reference the real data provided above — do not invent facts. Keep each section concise but informative (60-180 words of prose plus any tables).`;
+IMPORTANT: When projectRecords are provided above (e.g. RFIs, Inspections, HSE safety items, Site Instructions, Change Orders, Punch Lists), explicitly cite their reference numbers (e.g. RFI-0001, INSP-0002, HSE-0001, CO-0001) as factual evidence in the relevant sections. When financeSnapshot is present it is the authoritative source for all money figures (use its currency, not dollars). For a "financial_summary" section, the exact figures are rendered automatically from financeSnapshot — write ONLY 2-4 sentences of analytical commentary (risks, trends, recommended actions) without repeating a table. Be specific and reference the real data provided above — do not invent facts. Keep each section concise but informative (60-180 words of prose plus any tables).`;
 }
 
 /** Truncated so a large uploaded document doesn't blow the prompt token budget. */
