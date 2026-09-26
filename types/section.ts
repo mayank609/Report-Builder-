@@ -15,6 +15,7 @@ export type SectionType =
   | "subcontractor_log"
   | "budget"
   | "cost_forecast"
+  | "financial_summary"
   | "timeline"
   | "change_orders"
   | "rfi_log"
