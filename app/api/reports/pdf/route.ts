@@ -42,18 +42,85 @@ async function launchBrowser(): Promise<Browser> {
   return localBrowser as unknown as Browser;
 }
 
+/** Reports embed signature/photo data URLs, so allow a generous but finite payload. */
+const MAX_HTML_BYTES = 20 * 1024 * 1024;
+const RENDER_TIMEOUT_MS = 30_000;
+
+/**
+ * The HTML comes from the browser, so treat it as untrusted: only data/blob
+ * URLs and public http(s) hosts may load. This blocks SSRF against cloud
+ * metadata endpoints, localhost services and private networks, plus file://.
+ */
+function isAllowedResourceUrl(rawUrl: string): boolean {
+  if (rawUrl.startsWith("data:") || rawUrl.startsWith("blob:") || rawUrl === "about:blank") {
+    return true;
+  }
+  let url: URL;
+  try {
+    url = new URL(rawUrl);
+  } catch {
+    return false;
+  }
+  if (url.protocol !== "https:" && url.protocol !== "http:") return false;
+  const host = url.hostname.toLowerCase().replace(/^\[|\]$/g, "");
+  if (
+    host === "localhost" ||
+    host.endsWith(".localhost") ||
+    host.endsWith(".internal") ||
+    host.endsWith(".local") ||
+    host === "metadata.google.internal"
+  ) {
+    return false;
+  }
+  // IPv4 literals in loopback, private, link-local, CGNAT or unspecified ranges
+  const v4 = host.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+  if (v4) {
+    const [a, b] = [Number(v4[1]), Number(v4[2])];
+    if (a === 0 || a === 10 || a === 127) return false;
+    if (a === 169 && b === 254) return false;
+    if (a === 172 && b >= 16 && b <= 31) return false;
+    if (a === 192 && b === 168) return false;
+    if (a === 100 && b >= 64 && b <= 127) return false;
+    return true;
+  }
+  // Numeric/hex host shorthands (e.g. 2130706433, 0x7f000001) resolve to IPs
+  if (/^(0x[0-9a-f]+|\d+)$/i.test(host)) return false;
+  // IPv6 literals: block loopback, unspecified, unique-local, link-local, mapped v4
+  if (host.includes(":")) {
+    if (host === "::1" || host === "::") return false;
+    if (/^(fc|fd|fe8|fe9|fea|feb)/.test(host)) return false;
+    if (host.startsWith("::ffff:")) return false;
+  }
+  return true;
+}
+
 export async function POST(request: NextRequest) {
+  const contentLength = Number(request.headers.get("content-length") ?? 0);
+  if (contentLength > MAX_HTML_BYTES) {
+    return NextResponse.json({ error: "Report is too large to export." }, { status: 413 });
+  }
+
   const body = (await request.json().catch(() => null)) as PdfRequestBody | null;
 
-  if (!body?.html) {
+  if (!body?.html || typeof body.html !== "string") {
     return NextResponse.json({ error: "Missing report HTML." }, { status: 400 });
+  }
+  if (body.html.length > MAX_HTML_BYTES) {
+    return NextResponse.json({ error: "Report is too large to export." }, { status: 413 });
   }
 
   let browser: Browser | undefined;
   try {
     browser = await launchBrowser();
     const page = await browser.newPage();
-    await page.setContent(body.html, { waitUntil: "load" });
+    // Report and invoice HTML is static markup + inline SVG; no scripts needed.
+    await page.setJavaScriptEnabled(false);
+    await page.setRequestInterception(true);
+    page.on("request", (req) => {
+      if (isAllowedResourceUrl(req.url())) void req.continue();
+      else void req.abort("blockedbyclient");
+    });
+    await page.setContent(body.html, { waitUntil: "load", timeout: RENDER_TIMEOUT_MS });
 
     const pdfBuffer = await page.pdf({
       format: "Letter",
@@ -71,7 +138,8 @@ export async function POST(request: NextRequest) {
         : { top: "0.6in", bottom: "0.6in", left: "0.6in", right: "0.6in" },
     });
 
-    const filename = (body.filename || "report").replace(/[^a-z0-9-_]+/gi, "-");
+    const filename = String(body.filename || "report")
+      .slice(0, 120).replace(/[^a-z0-9-_]+/gi, "-");
 
     return new NextResponse(new Blob([new Uint8Array(pdfBuffer)]), {
       status: 200,

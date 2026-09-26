@@ -22,6 +22,7 @@ export const ReportDocumentViewer = forwardRef<HTMLIFrameElement, ReportDocument
             ref={ref}
             title="Report preview"
             srcDoc={html}
+            sandbox="allow-same-origin allow-modals"
             style={{
               width: "816px",
               height: "1200px",

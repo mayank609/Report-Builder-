@@ -1,4 +1,5 @@
 import { MongoClient } from "mongodb";
+import { ensureIndexes } from "./db-indexes";
 
 const options = {};
 let cachedPromise: Promise<MongoClient> | null = null;
@@ -28,8 +29,17 @@ function getClientPromise(): Promise<MongoClient> {
     cachedPromise = new MongoClient(uri, options).connect();
   }
 
+  if (!indexesRequested) {
+    indexesRequested = true;
+    cachedPromise
+      .then((client) => ensureIndexes(client.db(DB_NAME)))
+      .catch((error) => console.warn("ensureIndexes skipped:", error));
+  }
+
   return cachedPromise;
 }
+
+let indexesRequested = false;
 
 export default getClientPromise;
 
