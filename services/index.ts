@@ -10,3 +10,4 @@ export * from "./recordService";
 export * from "./reportService";
 export * from "./settingsService";
 export * from "./templateService";
+export * from "./reportVersionService";

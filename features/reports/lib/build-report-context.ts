@@ -26,8 +26,12 @@ export async function getReportRenderContext(
   const context: ReportRenderContext = {
     report,
     builderName: builder?.companyName ?? "Unknown Builder",
-    builderAddress: builder ? `${builder.address}, ${builder.city}, ${builder.state}` : "",
-    projectAddress: project ? `${project.address}, ${project.city}, ${project.state}` : "",
+    builderAddress: builder
+      ? [builder.address, builder.city, builder.state].filter((part) => part?.trim()).join(", ")
+      : "",
+    projectAddress: project
+      ? [project.address, project.city, project.state].filter((part) => part?.trim()).join(", ")
+      : "",
     clientName: client?.name ?? null,
     contractorName: contractor?.companyName ?? null,
     engineerName: engineer?.name ?? null,

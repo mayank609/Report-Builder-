@@ -29,6 +29,7 @@ import {
 } from "@/features/reports/lib/generate-report-schema";
 import { generateReportFromContext } from "@/lib/ai/client";
 import { withChart } from "@/lib/pdf/charts";
+import { formatMoney } from "@/lib/pdf/financial-summary";
 import { reportService, templateService, recordService } from "@/services";
 import { formatDate } from "@/lib/utils";
 import type { ReportInput, ReportSectionContent, ProjectRecord } from "@/types";
@@ -570,8 +571,8 @@ export function ReportGeneratorForm() {
             <div>
               <p className="text-xs text-muted-foreground">Budget Spent</p>
               <p className="font-medium">
-                ${selectedProject.spentBudget.toLocaleString()} / $
-                {selectedProject.totalBudget.toLocaleString()}
+                {formatMoney(selectedProject.spentBudget, selectedProject.finance?.snapshot.currency ?? "USD")} /{" "}
+                {formatMoney(selectedProject.totalBudget, selectedProject.finance?.snapshot.currency ?? "USD")}
               </p>
             </div>
           </CardContent>
