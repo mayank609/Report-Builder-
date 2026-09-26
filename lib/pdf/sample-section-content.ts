@@ -65,6 +65,8 @@ export function getSampleSectionHtml(type: SectionType): string {
         <tr><td>Site Work &amp; Foundation</td><td>$620,000</td><td>$598,000</td><td>$22,000</td></tr>
         <tr><td>Structural Framing</td><td>$980,000</td><td>$640,000</td><td>$340,000</td></tr>
       </tbody></table>`;
+    case "financial_summary":
+      return `<p>Cost consumption is tracking in line with physical progress. One invoice is overdue; follow up before the next pay application.</p>`;
     case "cost_forecast":
       return `<table class="report-table"><tbody>
         <tr><th>Budget at Completion</th><td>$4,200,000</td><th>Actual Cost to Date</th><td>$2,730,000</td></tr>

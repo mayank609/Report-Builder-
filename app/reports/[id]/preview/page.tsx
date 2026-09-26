@@ -46,6 +46,8 @@ import { ReportDocumentViewer } from "@/features/reports/components/report-docum
 import { ReportEditSheet } from "@/features/reports/components/report-edit-sheet";
 import { ReportSignatureDialog } from "@/features/reports/components/report-signature-dialog";
 import { ReportDownloadMenu } from "@/features/reports/components/report-download-menu";
+import { ReportVersionHistoryDialog } from "@/features/reports/components/report-version-history-dialog";
+import type { ReportVersionSnapshot } from "@/lib/report-versions";
 import { buildReportHtmlDocument } from "@/lib/pdf/report-html";
 import { withChart } from "@/lib/pdf/charts";
 import { generateReportFromContext } from "@/lib/ai/client";
@@ -56,6 +58,7 @@ import {
   engineerService,
   projectService,
   reportService,
+  reportVersionService,
   templateService,
   recordService,
 } from "@/services";
@@ -83,6 +86,7 @@ export default function ReportPreviewPage({
   const [editOpen, setEditOpen] = useState(false);
   const [signOpen, setSignOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [viewingVersion, setViewingVersion] = useState<ReportVersionSnapshot | null>(null);
   const [evidenceOpen, setEvidenceOpen] = useState(false);
   const [regenerating, setRegenerating] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
@@ -236,7 +240,24 @@ export default function ReportPreviewPage({
     );
   }
 
-  const html = buildReportHtmlDocument(data.context);
+  // An archived version is rendered through the exact same pipeline, read-only.
+  const html = buildReportHtmlDocument(
+    viewingVersion
+      ? {
+          ...data.context,
+          report: {
+            ...data.context.report,
+            name: viewingVersion.name,
+            sections: viewingVersion.sections,
+            aiSummary: viewingVersion.aiSummary,
+            layout: viewingVersion.layout,
+            signatures: viewingVersion.signatures,
+            status: viewingVersion.status,
+            version: viewingVersion.version,
+          },
+        }
+      : data.context
+  );
   const currentStatus = data.report.status || "draft";
   const currentVersion = data.report.version || 1;
 
@@ -471,6 +492,36 @@ export default function ReportPreviewPage({
         </div>
       </div>
 
+      {viewingVersion && (
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-2.5 text-sm">
+          <p>
+            <strong>Viewing v{viewingVersion.version}</strong> — read-only snapshot archived{" "}
+            {formatDateTime(viewingVersion.capturedAt)}. The current version is v{currentVersion}.
+          </p>
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={async () => {
+                try {
+                  const restored = await reportVersionService.restore(data.report.id, viewingVersion.version);
+                  toast.success(`Restored v${viewingVersion.version} as v${restored.version}. Re-approval required.`);
+                  setViewingVersion(null);
+                  refetch();
+                } catch (error) {
+                  toast.error((error as Error).message);
+                }
+              }}
+            >
+              Restore this version
+            </Button>
+            <Button size="sm" onClick={() => setViewingVersion(null)}>
+              Back to current
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Embedded Document Frame */}
       <div ref={containerRef} className={fullscreen ? "bg-background p-4" : ""}>
         <ReportDocumentViewer ref={iframeRef} html={html} zoom={zoom} />
@@ -482,23 +533,23 @@ export default function ReportPreviewPage({
         onOpenChange={setEditOpen}
         report={data.report}
         onSaved={async () => {
-          // If edited after approval/signing, bump version and note
+          // The server archived the previous version and bumped the number.
+          // Content edited after approval must be re-approved.
           if (["approved", "signed", "final"].includes(currentStatus)) {
-            const nextVer = currentVersion + 1;
+            const fresh = await reportService.getById(data.report.id);
             await reportService.update(data.report.id, {
-              version: nextVer,
               status: "in_review",
               versionHistory: [
-                ...(data.report.versionHistory || []),
+                ...(fresh?.versionHistory || data.report.versionHistory || []),
                 {
-                  version: nextVer,
+                  version: fresh?.version ?? currentVersion + 1,
                   date: new Date().toISOString(),
-                  action: `Revision edited (reset to In Review)`,
+                  action: "Reset to In Review after revision",
                   actor: "User",
                 },
               ],
             });
-            toast.info(`Report revision created: v${nextVer}`);
+            toast.info(`Revision saved as v${fresh?.version ?? currentVersion + 1}; re-approval required`);
           }
           refetch();
         }}
@@ -514,44 +565,17 @@ export default function ReportPreviewPage({
         }}
       />
 
-      {/* Version History Modal */}
-      <Dialog open={historyOpen} onOpenChange={setHistoryOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <History className="size-4" /> Report Version History
-            </DialogTitle>
-            <DialogDescription>
-              Complete audit trail of revisions, approvals, and signatures.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="mt-2 space-y-3 max-h-80 overflow-y-auto">
-            {(data.report.versionHistory || [
-              {
-                version: 1,
-                date: data.report.createdAt,
-                action: "Report created",
-                actor: "System",
-              },
-            ]).map((entry, idx) => (
-              <div key={idx} className="flex items-start gap-3 border-l-2 border-primary/40 pl-3 py-1 text-xs">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono font-bold text-primary">v{entry.version}</span>
-                    <span className="font-medium text-foreground">{entry.action}</span>
-                  </div>
-                  <p className="mt-0.5 text-[11px] text-muted-foreground">
-                    By {entry.actor} · {formatDateTime(entry.date)}
-                  </p>
-                  {entry.summary && (
-                    <p className="mt-1 text-muted-foreground italic text-[11px]">{entry.summary}</p>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* Version History */}
+      <ReportVersionHistoryDialog
+        open={historyOpen}
+        onOpenChange={setHistoryOpen}
+        report={data.report}
+        onView={setViewingVersion}
+        onRestored={() => {
+          setViewingVersion(null);
+          refetch();
+        }}
+      />
 
       {/* Source Traceability Evidence Modal */}
       <Dialog open={evidenceOpen} onOpenChange={setEvidenceOpen}>

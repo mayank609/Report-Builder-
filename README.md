@@ -1,9 +1,13 @@
 # BuildReport AI — Construction Report Generator
 
 An AI-powered report generation module for a construction SaaS platform. Built as
-a standalone feature module with no database or authentication — all data is
-served from local JSON fixtures and LocalStorage, designed so the storage layer
+a standalone feature module with no authentication — records are stored in MongoDB via the app's API routes
+(a personal Gemini key stays in the browser), designed so the storage layer
 can be swapped for real API/database calls later without touching any UI code.
+
+> **Platform integration:** this module is designed to run alongside its sibling module (Finance ↔ Report Builder).
+> See [`docs/PLATFORM_INTEGRATION.md`](docs/PLATFORM_INTEGRATION.md) for the shared data contract, deployment variables,
+> security hardening and the multi-tenant roadmap. Run `npm run verify` before pushing.
 
 ## Tech Stack
 

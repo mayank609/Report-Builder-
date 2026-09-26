@@ -42,6 +42,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { RecordCard } from "@/features/records/components/record-card";
 import { RecordModal } from "@/features/records/components/record-modal";
+import { ProjectFinanceCard } from "@/features/finance/components/project-finance-card";
 import { useAsync } from "@/hooks/use-async";
 import {
   projectService,
@@ -296,6 +297,8 @@ export default function ProjectDetailPage({ params }: { params: Promise<{ id: st
           )}
         </div>
       )}
+
+      <ProjectFinanceCard project={project} />
 
       <Tabs defaultValue="records">
         <TabsList>

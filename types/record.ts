@@ -42,6 +42,8 @@ export interface ProjectRecord {
   title: string;
   notes: string;
   attachments: RecordAttachment[];
+  // Per-record-type form payloads are heterogeneous and edited dynamically.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: Record<string, any>; // type-specific payload
   createdAt: string;
   updatedAt: string;

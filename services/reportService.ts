@@ -1,5 +1,7 @@
 import type { GeneratedReport, ReportInput } from "@/types";
 import { fetchCollection, fetchDocument, createDocument, updateDocument, deleteDocument } from "@/lib/api-client";
+import { numberingService } from "./numberingService";
+import { settingsService } from "./settingsService";
 
 export const reportService = {
   async list(): Promise<GeneratedReport[]> {
@@ -11,8 +13,16 @@ export const reportService = {
   },
 
   async create(input: ReportInput): Promise<GeneratedReport> {
-    const payload: ReportInput = {
+    const settings = await settingsService.get();
+    const existingCount = (await this.list()).length;
+    const reportNumber = await numberingService.next(
+      "report",
+      settings.reportNumberPrefix,
+      existingCount
+    );
+    const payload: ReportInput & { reportNumber: string } = {
       ...input,
+      reportNumber,
       version: input.version ?? 1,
       versionHistory: input.versionHistory && input.versionHistory.length > 0
         ? input.versionHistory
