@@ -1,4 +1,5 @@
 import type { Project, SectionType } from "@/types";
+import { formatMoneyCompact, renderFinancialSummarySection } from "./financial-summary";
 
 /**
  * Print-safe inline SVG chart builders. Pure markup (no JS/canvas), so they
@@ -307,7 +308,9 @@ export function buildBudgetChartSvg(project: Project): string {
     seriesALabel: "Allocated",
     seriesBLabel: "Spent",
     rows: project.budgetBreakdown.map((b) => ({ label: b.category, a: b.allocated, b: b.spent })),
-    formatValue: formatCurrencyCompact,
+    formatValue: project.finance
+      ? (n) => formatMoneyCompact(n, project.finance!.snapshot.currency)
+      : formatCurrencyCompact,
   });
 }
 
@@ -386,6 +389,8 @@ export function getChartSvgForSection(type: SectionType, project: Project): stri
 
 /** Prepends a chart above a section's existing HTML content, if eligible. */
 export function withChart(type: SectionType, html: string, project: Project): string {
+  // Financial figures come verbatim from the Finance module, never from the model.
+  if (type === "financial_summary") return renderFinancialSummarySection(project, html);
   const svg = getChartSvgForSection(type, project);
   if (!svg) return html;
   return `<div class="report-chart">${svg}</div>${html}`;
